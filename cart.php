@@ -1,21 +1,16 @@
 <?php
 session_start();
 include('includes/db.php');
-
-// Handle the removal of products from the cart
 if (isset($_GET['remove'])) {
     $productId = $_GET['remove'];
-    unset($_SESSION['cart'][$productId]); // Remove the product from the cart
+    unset($_SESSION['cart'][$productId]);
     header("Location: cart.php");
     exit();
 }
-
-// Handle quantity update
 if (isset($_POST['update_quantity'])) {
     $productId = $_POST['product_id'];
     $quantity = $_POST['quantity'];
-    
-    // Update the quantity of the product in the cart
+
     if ($quantity <= 0) {
         unset($_SESSION['cart'][$productId]);
     } else {
@@ -25,7 +20,6 @@ if (isset($_POST['update_quantity'])) {
     exit();
 }
 
-// Calculate the total price of the cart
 $totalPrice = 0;
 if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
     foreach ($_SESSION['cart'] as $productId => $cartItem) {

@@ -2,7 +2,6 @@
 session_start();
 include('includes/db.php');
 
-// Vérification de l'ID dans l'URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo "Produit non trouvé.";
     exit;
@@ -10,12 +9,9 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id = (int) $_GET['id'];
 
-// Requête pour récupérer le produit
 $stmt = $pdo->prepare("SELECT * FROM produit WHERE id_produit = ?");
 $stmt->execute([$id]);
 $produit = $stmt->fetch(PDO::FETCH_ASSOC);
-
-// Si aucun produit trouvé
 if (!$produit) {
     echo "Produit introuvable.";
     exit;
