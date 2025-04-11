@@ -1,16 +1,15 @@
 <?php
 session_start();
-include('includes/db.php'); // Assuming your PDO connection is in db.php
+include('includes/db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get the data from the form
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $email = $_POST['email'];
     $mot_de_passe = $_POST['mot_de_passe'];
+    $confirm_mot_de_passe = $_POST['confirm_mot_de_passe'];
 
-    // Hash the password before saving it to the database
-    $hashed_password = password_hash($mot_de_passe, PASSWORD_DEFAULT); // Hash the password
+    $hashed_password = password_hash($mot_de_passe, PASSWORD_DEFAULT); 
     $sql = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role, date_inscription)
             VALUES (:nom, :prenom, :email, :mot_de_passe, 'client', NOW())";
     
@@ -18,10 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bindParam(':nom', $nom);
     $stmt->bindParam(':prenom', $prenom);
     $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':mot_de_passe', $hashed_password);  // Bind the hashed password
+    $stmt->bindParam(':mot_de_passe', $hashed_password);  
 
     if ($stmt->execute()) {
-        // If successful, redirect to login page
         header("Location: login.php");
         exit();
     } else {
