@@ -2,42 +2,45 @@
 session_start();
 include('includes/db.php');
 
-// Recherche
-$search = isset($_GET['search']) ? $_GET['search'] : '';
+// Retrieve filters
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$category = isset($_GET['category']) ? trim($_GET['category']) : '';
 
-// Derniers 4 produits
-$stmtLatest = $pdo->prepare("SELECT * FROM produit ORDER BY id_produit DESC LIMIT 4");
-$stmtLatest->execute();
+// Get distinct categories for filter buttons
+$stmtCat = $pdo->query("SELECT DISTINCT categorie FROM produit");
+$categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
+
+// Query for latest products (4 most recent)
+$stmtLatest = $pdo->query("SELECT * FROM produit ORDER BY id_produit desc LIMIT 4");
 $latestProducts = $stmtLatest->fetchAll(PDO::FETCH_ASSOC);
 
-// Tous les produits ou recherche
-$sql = "SELECT * FROM produit WHERE nom LIKE ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute(["%$search%"]);
+// Build dynamic SQL for search + category
+$query = "SELECT * FROM produit WHERE 1=1";
+$params = [];
+
+if (!empty($search)) {
+    $query .= " AND nom LIKE ?";
+    $params[] = "%$search%";
+}
+if (!empty($category)) {
+    $query .= " AND categorie = ?";
+    $params[] = $category;
+}
+
+$stmt = $pdo->prepare($query);
+$stmt->execute($params);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Coffee Bliss ☕</title>
+    <title>Coffee Ness ☕</title>
     <link rel="stylesheet" href="assets/css/index.css">
 </head>
 <body>
-<header>
-    <h1 class="logo">Coffee Bliss</h1>
-    <nav>
-        <a href="index.php">Accueil</a>
-        <a href="cart.php">🛒 Panier</a>
-        <?php if (isset($_SESSION['user'])): ?>
-            <span>Bienvenue, <?= htmlspecialchars($_SESSION['user']) ?></span>
-            <a href="logout.php">Déconnexion</a>
-        <?php else: ?>
-            <a href="login.php">Connexion</a>
-            <a href="register.php">Créer un compte</a>
-        <?php endif; ?>
-    </nav>
-</header>
+
+<?php include('includes/header.php'); ?>
 
 <!-- HERO SECTION -->
 <section class="hero">
@@ -46,11 +49,19 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <a href="#products" class="btn-hero">Voir nos cafés</a>
 </section>
 
-<!-- SEARCH -->
+<!-- SEARCH + CATEGORY FILTER -->
 <section class="search-section">
     <form action="index.php" method="get">
         <input type="text" name="search" placeholder="Rechercher un produit..." value="<?= htmlspecialchars($search) ?>">
-        <button type="submit">🔍</button>
+        <select name="category">
+            <option value="">Toutes les catégories</option>
+            <?php foreach ($categories as $cat): ?>
+                <option value="<?= htmlspecialchars($cat) ?>" <?= $cat === $category ? 'selected' : '' ?>>
+                    <?= ucfirst($cat) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <button type="submit">🔍 Rechercher</button>
     </form>
 </section>
 
@@ -65,7 +76,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <span class="badge new">Nouveau</span>
                 <p><?= htmlspecialchars(substr($produit['description'], 0, 60)) ?>...</p>
                 <span class="price"><?= $produit['prix'] ?> €</span>
-                <a href="details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir</a>
+                <a href="product/details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir</a>
             </div>
         <?php endforeach; ?>
     </div>
@@ -73,7 +84,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!-- TOUS LES PRODUITS -->
 <section id="products">
-    <h2>Nos Produits</h2>
+    <h2>Nos Produits <?= $category ? '(' . ucfirst($category) . ')' : '' ?></h2>
     <div class="products">
         <?php if ($produits): ?>
             <?php foreach ($produits as $produit): ?>
@@ -82,24 +93,23 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h3><?= htmlspecialchars($produit['nom']) ?></h3>
                     <p><?= htmlspecialchars($produit['description']) ?></p>
                     <span class="price"><?= $produit['prix'] ?> €</span>
-                    <a href="details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir Détail</a>
+                    <a href="product/details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir Détail</a>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <p>Aucun produit trouvé.</p>
+            <p>Aucun produit trouvé pour votre recherche.</p>
         <?php endif; ?>
     </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-    <div class="footer-links">
-        <p>📍 Coffee Bliss, Alger - Bab Ezzouar</p>
-        <p>📞 +213 660 123 456</p>
-        <p>✉ contact@coffeebliss.dz</p>
-    </div>
-    <p>&copy; <?= date('Y') ?> Coffee Bliss. Tous droits réservés.</p>
-</footer>
+<?php include('includes/footer.php'); ?>
+<script>
+  document.querySelector('.btn-hero').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.querySelector('#products').scrollIntoView({ behavior: 'smooth' });
+  });
+</script>
+
 
 </body>
 </html>

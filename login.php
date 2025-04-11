@@ -1,33 +1,26 @@
 <?php
 session_start();
-include('includes/db.php');  // Include database connection
+include('includes/db.php'); 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get email and password from the form
     $email = $_POST['email'];
     $mot_de_passe = $_POST['mot_de_passe'];
-
-    // Query the database to check if the user exists
     $sql = "SELECT * FROM utilisateur WHERE email = :email";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        // Check if the password matches
         if (password_verify($mot_de_passe, $user['mot_de_passe'])) {
-            // Start a session and save user info
             $_SESSION['user_id'] = $user['id_utilisateur'];
             $_SESSION['username'] = $user['nom'] . ' ' . $user['prenom'];
             $_SESSION['role'] = $user['role'];
-
-            // Redirect based on role
             if ($user['role'] === 'admin') {
                 header("Location: admin/admin_dashboard.php");
             } else {
                 header("Location: user/client_dashboard.php");
             }
-            exit();  // Make sure to stop further script execution
+            exit();
         } else {
             echo "Mot de passe invalide!";
         }
