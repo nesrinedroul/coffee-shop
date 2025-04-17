@@ -7,7 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
     <h1 class="logo">Coffee Ness</h1>
     <nav>
         <a href="index.php">Accueil</a>
-        <a href="product/cart.php">🛒 Panier</a>
+        <a href="produit.php">Produits</a>
+        <a href="contact.php">Contact</a>
         <?php if (isset($_SESSION['user'])): ?>
             <span>Bienvenue, <?= htmlspecialchars($_SESSION['user']) ?></span>
             <a href="logout.php">Déconnexion</a>
