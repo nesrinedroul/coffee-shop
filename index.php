@@ -48,10 +48,8 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <p>Un café qui réveille vos sens – fraîcheur, passion et arômes d’exception</p>
     <a href="#products" class="btn-hero">Voir nos cafés</a>
 </section>
-
-<!-- SEARCH + CATEGORY FILTER -->
 <section class="search-section">
-    <form action="index.php" method="get">
+    <form action="produit.php" method="get">
         <input type="text" name="search" placeholder="Rechercher un produit..." value="<?= htmlspecialchars($search) ?>">
         <select name="category">
             <option value="">Toutes les catégories</option>
@@ -64,8 +62,6 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <button type="submit">🔍 Rechercher</button>
     </form>
 </section>
-
-<!-- DERNIERS PRODUITS -->
 <section class="latest-products">
     <h2>Nouveautés</h2>
     <div class="products">
@@ -81,8 +77,6 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
     </div>
 </section>
-
-<!-- TOUS LES PRODUITS -->
 <section id="products">
     <h2>Nos Produits <?= $category ? '(' . ucfirst($category) . ')' : '' ?></h2>
     <div class="products">
