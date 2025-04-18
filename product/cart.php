@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('includes/db.php');
+include('../includes/db.php');
 if (isset($_GET['remove'])) {
     $productId = $_GET['remove'];
     unset($_SESSION['cart'][$productId]);
@@ -37,7 +37,7 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Panier</title>
-    <link rel="stylesheet" href="assets/css/cart.css">
+    <link rel="stylesheet" href="../assets/css/cart.css">
 </head>
 <body>
     <header>
@@ -45,12 +45,12 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
             <h1>Mon Panier</h1>
             <nav>
                 <ul>
-                    <li><a href="index.php">Accueil</a></li>
+                    <li><a href="../index.php">Accueil</a></li>
                     <li><a href="produits.php">Produits</a></li>
                     <li><a href="contact.php">Contact</a></li>
                     <li><a href="cart.php">Panier (<span id="cart-count"><?php echo count($_SESSION['cart'] ?? []); ?></span>)</a></li>
-                    <li><a href="login.php">Se connecter</a></li>
-                    <li><a href="register.php">S'inscrire</a></li>
+                    <li><a href="../login.php">Se connecter</a></li>
+                    <li><a href="../register.php">S'inscrire</a></li>
                 </ul>
             </nav>
         </div>
