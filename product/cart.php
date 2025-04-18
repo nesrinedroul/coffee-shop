@@ -103,7 +103,7 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
                 </div>
 
             <?php else: ?>
-                <p>Votre panier est vide. <a href="index.php">Retourner aux produits</a></p>
+                <p>Votre panier est vide. <a href="../user/client_dashboard.php">Retourner aux produits</a></p>
             <?php endif; ?>
         </div>
     </section>
