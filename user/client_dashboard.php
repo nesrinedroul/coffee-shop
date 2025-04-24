@@ -39,11 +39,11 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h2>👋 Bienvenue</h2>
         <h3><?= htmlspecialchars($_SESSION['username']) ?></h3>
         <nav>
-            <a href="client_dashboard.php">🏠 Accueil</a>
+            <a href="user/client_dashboard.php">🏠 Accueil</a>
             <a href="?category=chaude">☕ Chaude</a>
             <a href="?category=cold">🍵 cold</a>
             <a href="?category=pastries">🥐 Pâtisseries</a>
-            <a href="product/cart.php">🛒 Mon Panier</a>
+            <a href="../product/cart.php">🛒 Mon Panier</a>
             <a href="client_orders.php">📦 Mes Commandes</a>
             <a href="history.php">📚 Historique</a>
             <a href="../logout.php" class="logout">🚪 Déconnexion</a>
