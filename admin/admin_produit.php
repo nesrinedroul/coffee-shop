@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('includes/db.php');
+include('../includes/db.php');
 
 // Only allow admin users to access this page
 if ($_SESSION['role'] !== 'admin') {
