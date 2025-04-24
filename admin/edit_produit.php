@@ -1,14 +1,12 @@
 <?php
 session_start();
-include('includes/db.php');
+include('../includes/db.php');
 
-// Only allow admin users to access this page
 if ($_SESSION['role'] !== 'admin') {
     header("Location: index.php");
     exit();
 }
 
-// Fetch the product from the database
 $product_id = $_GET['id'];
 $sql = "SELECT * FROM produit WHERE id_produit = ?";
 $stmt = $pdo->prepare($sql);
@@ -51,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier le Produit</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
     <div class="container">

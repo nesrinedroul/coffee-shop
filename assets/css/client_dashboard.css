@@ -11,7 +11,7 @@ body {
 
 .sidebar {
     width: 220px;
-    background-color: #1e1e1e;
+    background-color: #682f03;
     color: white;
     padding: 20px;
     display: flex;
@@ -34,7 +34,7 @@ body {
     text-decoration: none;
     margin: 10px 0;
     padding: 10px;
-    background-color: #333;
+    background-color: #603800;
     border-radius: 8px;
     transition: 0.2s;
 }
