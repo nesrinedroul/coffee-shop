@@ -8,9 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
     <nav>
         <a href="index.php">Accueil</a>
         <a href="produit.php">Produits</a>
-        <a href="contact.php">Contact</a>
-        <?php if (isset($_SESSION['user'])): ?>
-            <span>Bienvenue, <?= htmlspecialchars($_SESSION['user']) ?></span>
+        <?php if (isset($_SESSION['username'])): ?>
+            <a href="cart.php">Mon Panier</a>
+            <a href="history.php">historique</a>
             <a href="logout.php">Déconnexion</a>
         <?php else: ?>
             <a href="login.php">Connexion</a>
