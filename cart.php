@@ -40,22 +40,8 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
     <link rel="stylesheet" href="assets/css/cart.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Mon Panier</h1>
-            <nav>
-                <ul>
-                    <li><a href="index.php">Accueil</a></li>
-                    <li><a href="produits.php">Produits</a></li>
-                    <li><a href="contact.php">Contact</a></li>
-                    <li><a href="cart.php">Panier (<span id="cart-count"><?php echo count($_SESSION['cart'] ?? []); ?></span>)</a></li>
-                    <li><a href="login.php">Se connecter</a></li>
-                    <li><a href="register.php">S'inscrire</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
+   
+  <?php include('includes/header.php'); ?>
     <section class="cart">
         <div class="container">
             <h2>Articles dans votre panier</h2>
@@ -103,15 +89,12 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
                 </div>
 
             <?php else: ?>
-                <p>Votre panier est vide. <a href="index.php">Retourner aux produits</a></p>
+                <p>Votre panier est vide. <a href="produit.php">Retourner aux produits</a></p>
             <?php endif; ?>
         </div>
     </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Notre Café. Tous droits réservés.</p>
-        </div>
-    </footer>
+   <?php include('includes/footer.php'); ?>
+    
 </body>
 </html>
