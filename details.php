@@ -10,7 +10,6 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id = (int) $_GET['id'];
 
-// Récupérer les détails du produit
 $stmt = $pdo->prepare("SELECT * FROM produit WHERE id_produit = ?");
 $stmt->execute([$id]);
 $produit = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -20,10 +19,8 @@ if (!$produit) {
     exit;
 }
 
-// Traitement du formulaire d'ajout au panier
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_produit'])) {
-    if (!isset($_SESSION['user'])) {
-        // Rediriger vers la page de login si l'utilisateur n'est pas connecté
+    if (!isset($_SESSION['username'])) {
         header("Location: login.php");
         exit;
     }
@@ -36,13 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_produit'])) {
         // Si le produit est déjà dans le panier, on ajoute la quantité demandée
         $_SESSION['cart'][$productId]['quantity'] += $quantity;
     } else {
-        // Sinon, on l'ajoute au panier avec la quantité demandée
         $_SESSION['cart'][$productId] = [
             'quantity' => $quantity
         ];
     }
-
-    // Rediriger l'utilisateur vers la page du panier
     header("Location: cart.php");
     exit();
 }
@@ -59,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_produit'])) {
 
 <?php include('includes/header.php'); ?>
 
-<!-- SECTION DÉTAILS DU PRODUIT -->
 <main class="product-detail-container">
     <div class="product-image">
         <img src="<?= htmlspecialchars($produit['image']) ?>" alt="<?= htmlspecialchars($produit['nom']) ?>">
@@ -68,8 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_produit'])) {
         <h2><?= htmlspecialchars($produit['nom']) ?></h2>
         <p class="description"><?= htmlspecialchars($produit['description']) ?></p>
         <p class="price"><strong>Prix :</strong> <?= $produit['prix'] ?> €</p>
-
-        <!-- Si l'utilisateur est connecté, afficher le formulaire de commande -->
         <?php if (isset($_SESSION['username'])): ?>
             <form method="post" action="details.php?id=<?= $produit['id_produit'] ?>">
                 <label for="quantite">Quantité :</label>
@@ -84,6 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_produit'])) {
         <?php endif; ?>
     </div>
 </main>
-
+<?php include('includes/footer.php'); ?>
 </body>
 </html>

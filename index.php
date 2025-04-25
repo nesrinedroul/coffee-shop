@@ -34,6 +34,39 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Coffee Ness ☕</title>
     <link rel="stylesheet" href="assets/css/index.css">
 </head>
+<style>
+    .cookie-popup {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff4e5;
+    color: #4a2c1a;
+    padding: 20px;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.2);
+    z-index: 1000;
+  }
+  
+  .cookie-popup .cookie-content {
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .cookie-popup button {
+    margin: 10px;
+    padding: 10px 15px;
+    background-color: #6f4e37;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .cookie-popup.hidden {
+    display: none;
+  }
+</style>
+
 <body>
 
 <?php include('includes/header.php'); ?>
@@ -96,15 +129,39 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
     </div>
 </section>
+<!-- Cookie Consent Popup -->
+<div id="cookie-consent-popup" class="cookie-popup">
+  <div class="cookie-content">
+    <h3>🍪 Nous utilisons des cookies</h3>
+    <p>Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez accepter tous les cookies ou gérer vos préférences.</p>
+    <div class="cookie-buttons">
+      <button id="accept-all-btn">Tout accepter</button>
+      <button id="customize-btn">Personnaliser</button>
+    </div>
+  </div>
+</div>
+
+<!-- Preferences Panel -->
+<div id="cookie-preferences" class="cookie-popup hidden">
+  <div class="cookie-content">
+    <h4>Préférences des cookies</h4>
+    <form id="cookie-form">
+      <label>
+        <input type="checkbox" checked disabled> Cookies essentiels (obligatoire)
+      </label><br>
+      <label>
+        <input type="checkbox" name="analytics" id="analytics"> Cookies de performance (ex: Google Analytics)
+      </label><br>
+      <label>
+        <input type="checkbox" name="marketing" id="marketing"> Cookies marketing (ex: Facebook Pixel)
+      </label><br><br>
+      <button type="submit">Sauvegarder mes choix</button>
+    </form>
+  </div>
+</div>
 
 <?php include('includes/footer.php'); ?>
-<script>
-  document.querySelector('.btn-hero').addEventListener('click', function (e) {
-    e.preventDefault();
-    document.querySelector('#products').scrollIntoView({ behavior: 'smooth' });
-  });
-</script>
-
-
+<script src="assets/js/cookies.js"></script>
 </body>
+
 </html>
