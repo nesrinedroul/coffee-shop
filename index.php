@@ -2,19 +2,15 @@
 session_start();
 include('includes/db.php');
 
-// Retrieve filters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $category = isset($_GET['category']) ? trim($_GET['category']) : '';
 
-// Get distinct categories for filter buttons
 $stmtCat = $pdo->query("SELECT DISTINCT categorie FROM produit");
 $categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
 
-// Query for latest products (4 most recent)
 $stmtLatest = $pdo->query("SELECT * FROM produit ORDER BY id_produit desc LIMIT 4");
 $latestProducts = $stmtLatest->fetchAll(PDO::FETCH_ASSOC);
 
-// Build dynamic SQL for search + category
 $query = "SELECT * FROM produit WHERE 1=1";
 $params = [];
 
@@ -44,7 +40,12 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!-- HERO SECTION -->
 <section class="hero">
+<?php if (isset($_SESSION['username'])): ?>
+    
+    <h2>☕ Bienvenue chez Coffee Bliss<span class="welcome">  <?= htmlspecialchars($_SESSION['username']) ?></span> </h2>
+<?php else: ?>
     <h2>☕ Bienvenue chez Coffee Bliss</h2>
+<?php endif; ?>
     <p>Un café qui réveille vos sens – fraîcheur, passion et arômes d’exception</p>
     <a href="#products" class="btn-hero">Voir nos cafés</a>
 </section>
@@ -72,7 +73,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <span class="badge new">Nouveau</span>
                 <p><?= htmlspecialchars(substr($produit['description'], 0, 60)) ?>...</p>
                 <span class="price"><?= $produit['prix'] ?> €</span>
-                <a href="product/details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir</a>
+                <a href="details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir</a>
             </div>
         <?php endforeach; ?>
     </div>
@@ -87,7 +88,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h3><?= htmlspecialchars($produit['nom']) ?></h3>
                     <p><?= htmlspecialchars($produit['description']) ?></p>
                     <span class="price"><?= $produit['prix'] ?> €</span>
-                    <a href="product/details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir Détail</a>
+                    <a href="details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir Détail</a>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
