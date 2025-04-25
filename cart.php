@@ -40,8 +40,8 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
     <link rel="stylesheet" href="assets/css/cart.css">
 </head>
 <body>
-   
   <?php include('includes/header.php'); ?>
+  
     <section class="cart">
         <div class="container">
             <h2>Articles dans votre panier</h2>

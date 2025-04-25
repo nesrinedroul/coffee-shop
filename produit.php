@@ -64,7 +64,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h3><?= htmlspecialchars($produit['nom']) ?></h3>
                     <p><?= htmlspecialchars($produit['description']) ?></p>
                     <span class="price"><?= $produit['prix'] ?> €</span>
-                    <a href="product/details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir Détail</a>
+                    <a href="details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir Détail</a>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
