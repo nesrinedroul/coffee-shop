@@ -14,7 +14,7 @@ $commande_id = $_GET['commande'] ?? null;
     <div class="container">
         <h1>Merci pour votre commande !</h1>
         <?php if ($commande_id): ?>
-            <p>Votre commande n° <strong><?php echo htmlspecialchars($commande_id); ?></strong> a bien été enregistrée.</p>
+            <p>Votre commande a bien été enregistrée.</p>
         <?php else: ?>
             <p>Votre commande a bien été enregistrée.</p>
         <?php endif; ?>

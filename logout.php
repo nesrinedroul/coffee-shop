@@ -9,13 +9,13 @@ session_destroy();
 <head>
   <meta charset="UTF-8">
   <title>Déconnexion</title>
-  <meta http-equiv="refresh" content="5;url=../index.php"> <!-- Redirection automatique après 5 secondes -->
+  <meta http-equiv="refresh" content="5;url=index.php"> <!-- Redirection automatique après 5 secondes -->
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #74ebd5, #9face6);
+      background: linear-gradient(135deg,rgb(189, 104, 0),rgb(255, 237, 173));
       height: 100vh;
       display: flex;
       align-items: center;

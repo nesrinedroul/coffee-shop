@@ -3,7 +3,7 @@ session_start();
 include('includes/db.php');
 
 // Vérifier que l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
@@ -37,14 +37,11 @@ foreach ($_SESSION['cart'] as $productId => $item) {
     ];
 }
 
-// Enregistrer la commande dans la base
 $stmt = $pdo->prepare("INSERT INTO commande (id_utilisateur, date_commande, statut, total) VALUES (:id_user, NOW(), 'en_attente', :total)");
 $stmt->execute([
     ':id_user' => $_SESSION['user_id'],
     ':total' => $total
 ]);
-
-// Récupérer l'ID de la commande nouvellement créée
 $id_commande = $pdo->lastInsertId();
 
 // Insérer les produits de la commande
