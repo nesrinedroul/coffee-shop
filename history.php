@@ -2,7 +2,7 @@
 session_start();
 include("includes/db.php");
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
@@ -99,8 +99,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border: none;
             cursor: pointer;
         }
-
-        /* Modal styles */
         #cancelModal {
             display: none;
             position: fixed;
@@ -166,7 +164,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Date</th>
                     <th>Statut</th>
                     <th>Total</th>
@@ -177,7 +174,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php foreach ($result as $commande): ?>
                     <tr>
-                        <td><?= htmlspecialchars($commande['id_commande']) ?></td>
                         <td><?= htmlspecialchars($commande['date_commande']) ?></td>
                         <td><?= htmlspecialchars($commande['statut']) ?></td>
                         <td><?= number_format($commande['total'], 2) ?> DA</td>
@@ -199,12 +195,10 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tbody>
         </table>
     </div>
-
-    <!-- Cancel Confirmation Modal -->
     <div id="cancelModal">
         <div class="modal-content">
             <p>Voulez-vous vraiment annuler cette commande ?</p>
-            <form method="POST" action="annuler_commande.php" id="cancelForm">
+            <form method="POST" action="" id="cancelForm">
                 <input type="hidden" name="id_commande" id="modalCommandeId">
                 <button type="submit" class="confirm">Oui, annuler</button>
                 <button type="button" onclick="closeModal()" class="cancel">Annuler</button>

@@ -2,13 +2,6 @@
 session_start();
 include('includes/db.php');
 
-// Check if the user has already accepted cookies
-if (!isset($_COOKIE['cookies_accepted'])) {
-    $showCookiePopup = true;
-} else {
-    $showCookiePopup = false;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $mot_de_passe = $_POST['mot_de_passe'];
@@ -30,10 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['username'] = $user['nom'] . ' ' . $user['prenom'];
         $_SESSION['role'] = $user['role'];
 
-        // Set cookies for the user
-        setcookie('user_id', $user['id_utilisateur'], time() + (86400 * 30), "/"); // Cookie for 30 days
-        setcookie('username', $user['nom'] . ' ' . $user['prenom'], time() + (86400 * 30), "/"); // Cookie for 30 days
-
         if ($user['role'] === 'admin') {
             header("Location: admin/admin_dashboard.php");
         } else {
@@ -47,10 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// If the user has not accepted cookies, show the popup
-if ($showCookiePopup) {
-    echo "<script>window.onload = function() { document.getElementById('cookie-consent-popup').style.display = 'block'; };</script>";
-}
 
 ?>
 
@@ -79,16 +64,6 @@ if ($showCookiePopup) {
         </form>
         <p>Pas encore inscrit ? <a href="register.php">Créer un compte</a></p>
     </div>
-    <div id="cookie-consent-popup">
-        <p>Nous utilisons des cookies pour améliorer votre expérience. En continuant à naviguer, vous acceptez notre politique de cookies.</p>
-        <button id="accept-cookies-btn">Accepter</button>
-    </div>
-
-    <script>
-        document.getElementById('accept-cookies-btn').addEventListener('click', function() {
-            document.cookie = "cookies_accepted=true; path=/; max-age=" + (60 * 1 * 1* 1); // Cookie for 1 day
-            document.getElementById('cookie-consent-popup').style.display = 'none';
-        });
-    </script>
+   
 </body>
 </html>
