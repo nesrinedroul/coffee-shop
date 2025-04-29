@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     exit();
 }
 
-require '../includes/db.php'; // Include your database connection file
+require '../includes/db.php'; 
 $stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE id_utilisateur = :user_id");
 $stmt->execute(['user_id' => $_SESSION['user_id']]);
 $user = $stmt->fetch();
@@ -18,7 +18,7 @@ $user = $stmt->fetch();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../assets/css/admin.css"> <!-- Link your CSS file -->
+    <link rel="stylesheet" href="../assets/css/admin.css"> 
 </head>
 <body>
     <div class="dashboard-container">
@@ -36,8 +36,8 @@ $user = $stmt->fetch();
             <div class="admin-options">
                 <h3>What would you like to do?</h3>
                 <div class="option">
-                    <h4><a href="manage_users.php">Manage Users</a></h4>
-                    <p>View, edit, or delete users.</p>
+                    <h4><a href="manage_users.php">Manage Commands</a></h4>
+                    <p>View, edit delete a command.</p>
                 </div>
                 <div class="option">
                     <h4><a href="admin_produit.php">Manage Products</a></h4>
