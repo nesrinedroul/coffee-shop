@@ -1,16 +1,14 @@
 <?php
 session_start();
-include('includes/db.php'); // Connexion à la base de données
+include('includes/db.php'); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération des données du formulaire
     $nom = trim($_POST['nom']);
     $prenom = trim($_POST['prenom']);
     $email = trim($_POST['email']);
     $mot_de_passe = $_POST['mot_de_passe'];
-    $confirm = $_POST['confirm_mot_de_passe'];
+    $confirm = $_POST['confirm_mot_de_passe']; 
 
-    // Vérification si l'email existe déjà
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM utilisateur WHERE email = :email");
     $stmt->execute(['email' => $email]);
 
@@ -20,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Validation des champs côté serveur
     if (empty($nom) || empty($prenom) || empty($email) || empty($mot_de_passe) || empty($confirm)) {
         $_SESSION['error'] = "Tous les champs sont obligatoires.";
     } elseif (!preg_match("/^[a-zA-ZÀ-ÿ\- ]{2,30}$/", $nom) || !preg_match("/^[a-zA-ZÀ-ÿ\- ]{2,30}$/", $prenom)) {
@@ -34,10 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($mot_de_passe !== $confirm) {
         $_SESSION['error'] = "Les mots de passe ne correspondent pas.";
     } else {
-        // Hachage du mot de passe
+        
         $hash = password_hash($mot_de_passe, PASSWORD_DEFAULT);
-
-        // Insertion en base
         $stmt = $pdo->prepare("INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role) VALUES (:nom, :prenom, :email, :mot_de_passe, 'client')");
         $stmt->execute([
             'nom' => $nom,
@@ -47,7 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $_SESSION['success'] = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
-        header("Location: user/client_dashboard.php");
+        $_SESSION['user_id'] = $user['id_utilisateur'];
+        $_SESSION['username'] = $user['nom'] . ' ' . $user['prenom'];
+        $_SESSION['role'] = $user['role'];
+        header("Location: index.php");
         exit();
     }
 
@@ -132,7 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     document.getElementById('registerForm').addEventListener('submit', function (e) {
         let valid = true;
 
-        // Réinitialiser les messages d'erreur
         document.querySelectorAll('.error-text').forEach(el => el.textContent = '');
         document.querySelectorAll('input').forEach(el => el.classList.remove('error-field'));
 
@@ -162,23 +159,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             email.classList.add('error-field');
             valid = false;
         }
-
-        // Validation du mot de passe
         if (mdp.value.length < 8 || mdp.value.length > 20 ||
             !/[A-Z]/.test(mdp.value) || !/[a-z]/.test(mdp.value) || !/[0-9]/.test(mdp.value) || /\s/.test(mdp.value)) {
             document.getElementById('error-password').textContent = "Le mot de passe doit contenir entre 8-20 caractères, avec majuscule, minuscule, chiffre, sans espace.";
             mdp.classList.add('error-field');
             valid = false;
         }
-
-        // Vérification de la confirmation
         if (mdp.value !== confirm.value) {
             document.getElementById('error-confirm').textContent = "Les mots de passe ne correspondent pas.";
             confirm.classList.add('error-field');
             valid = false;
         }
-
-        // Empêche l'envoi si des erreurs sont présentes
         if (!valid) {
             e.preventDefault();
         }
