@@ -1,64 +1,59 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // Utility functions
-    function setCookie(name, value, days) {
-        let expires = "";
-        if (days) {
-            let date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + value + expires + "; path=/";
+// ✅ Fonctions utilitaires pour manipuler les cookies
+function setCookie(name, value, days = 365) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+  }
+  
+  function getCookie(name) {
+    const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    const popup = document.getElementById('cookie-consent-popup');
+    const preferences = document.getElementById('cookie-preferences');
+    const customizeBtn = document.getElementById('customize-btn');
+    const acceptAllBtn = document.getElementById('accept-all-btn');
+    const form = document.getElementById('cookie-form');
+  
+    // 👀 Vérifie si le cookie existe
+    const existingPrefs = getCookie('cookie_preferences');
+    if (!existingPrefs) {
+      popup.style.display = 'block';
     }
-
-    function getCookie(name) {
-        const nameEQ = name + "=";
-        const ca = document.cookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-    }
-
-    const consentPopup = document.getElementById('cookie-consent-popup');
-    const preferencesPopup = document.getElementById('cookie-preferences');
-
-    // Show popup only if cookie not set
-    if (!getCookie('cookie_preferences')) {
-        consentPopup.classList.remove('hidden');
-    }
-
-    // Handle "Accept All"
-    document.getElementById('accept-all-btn').addEventListener('click', function () {
-        const preferences = {
-            essential: true,
-            analytics: true,
-            marketing: true
-        };
-        setCookie('cookie_preferences', JSON.stringify(preferences), 180); // 180 days
-        consentPopup.classList.add('hidden');
+  
+    // 🎯 Gérer "Tout accepter"
+    acceptAllBtn.addEventListener('click', () => {
+      const prefs = {
+        essential: true,
+        analytics: true,
+        marketing: true
+      };
+      setCookie('cookie_preferences', JSON.stringify(prefs));
+      popup.style.display = 'none';
+      preferences.style.display = 'none';
     });
-
-    // Handle "Customize"
-    document.getElementById('customize-btn').addEventListener('click', function () {
-        consentPopup.classList.add('hidden');
-        preferencesPopup.classList.remove('hidden');
+  
+    // 🛠 Gérer le bouton "Personnaliser"
+    customizeBtn.addEventListener('click', () => {
+      popup.style.display = 'none';
+      preferences.style.display = 'block';
     });
-
-    // Handle preference form submission
-    document.getElementById('cookie-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const analytics = document.getElementById('analytics').checked;
-        const marketing = document.getElementById('marketing').checked;
-
-        const preferences = {
-            essential: true,
-            analytics: analytics,
-            marketing: marketing
-        };
-
-        setCookie('cookie_preferences', JSON.stringify(preferences), 180);
-        preferencesPopup.classList.add('hidden');
+  
+    // 💾 Gérer la soumission du formulaire de préférences
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const analytics = document.getElementById('analytics').checked;
+      const marketing = document.getElementById('marketing').checked;
+  
+      const prefs = {
+        essential: true,
+        analytics: analytics,
+        marketing: marketing
+      };
+  
+      setCookie('cookie_preferences', JSON.stringify(prefs));
+      preferences.style.display = 'none';
     });
-});
+  });
+  
