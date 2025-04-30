@@ -44,7 +44,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     color: #4a2c1a;
     padding: 20px;
     box-shadow: 0 -2px 6px rgba(0,0,0,0.2);
-    z-index: 1000;
+    z-index: 100;
   }
   
   .cookie-popup .cookie-content {
@@ -61,12 +61,14 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     border: none;
     cursor: pointer;
   }
-  
+  .hidden {
+      display: none;
+    }
   .cookie-popup.hidden {
     display: none;
   }
 </style>
-
+<script src="assets/js/cookies.js"></script>
 <body>
 
 <?php include('includes/header.php'); ?>
@@ -161,7 +163,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <?php include('includes/footer.php'); ?>
-<script src="assets/js/cookies.js"></script>
+
 </body>
 
 </html>

@@ -22,15 +22,7 @@ $user = $stmt->fetch();
 </head>
 <body>
     <div class="dashboard-container">
-        <div class="sidebar">
-            <h2>Admin Panel</h2>
-            <ul>
-                <li><a href="admin_dashboard.php">Dashboard</a></li>
-                <li><a href="manage_users.php">Manage Users</a></li>
-                <li><a href="admin_produit.php">Manage Products</a></li>
-                <li><a href="../logout.php">Logout</a></li>
-            </ul>
-        </div>
+        <?php include('admin_header.php'); ?>
         <div class="main-content">
             <h1>Welcome, <?php echo $user['prenom']; ?>!</h1>
             <div class="admin-options">
