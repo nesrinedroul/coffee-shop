@@ -33,6 +33,11 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <title>Coffee Ness ☕</title>
     <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
 </head>
 <style>
     .cookie-popup {
@@ -100,7 +105,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </section>
 <section class="latest-products">
     <h2>Nouveautés</h2>
-    <div class="products">
+    <div class="products-slider">
         <?php foreach ($latestProducts as $produit): ?>
             <div class="product-card">
                 <img src="<?= htmlspecialchars($produit['image']) ?>" alt="<?= htmlspecialchars($produit['nom']) ?>">
@@ -113,6 +118,8 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
     </div>
 </section>
+
+
 <section id="products">
     <h2>Nos Produits <?= $category ? '(' . ucfirst($category) . ')' : '' ?></h2>
     <div class="products">
@@ -163,6 +170,29 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <?php include('includes/footer.php'); ?>
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('.products-slider').slick({
+    autoplay: true,
+    autoplaySpeed: 3000,
+    dots: true,
+    arrows: false,
+    infinite: true,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    responsive: [
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 1
+          }
+        }
+    ]
+  });
+});
+</script>
 
 </body>
 
