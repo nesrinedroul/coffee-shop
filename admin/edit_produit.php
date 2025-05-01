@@ -1,34 +1,19 @@
 <?php
-session_start();
+
 include('../includes/db.php');
-
-// Vérifier que l'utilisateur est admin
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: index.php");
-    exit();
-}
-
-// Vérifier que l'id est présent dans l'URL
 if (!isset($_GET['id'])) {
     echo "ID du produit manquant.";
     exit();
 }
-
 $product_id = $_GET['id'];
-
-// Charger les données du produit
 $sql = "SELECT * FROM produit WHERE id_produit = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$product_id]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
-// Vérifier si le produit existe
 if (!$product) {
     echo "Produit non trouvé!";
     exit();
 }
-
-// Gestion du formulaire de mise à jour
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $description = $_POST['description'];
@@ -50,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$name, $description, $price, $stock, $imagePath, $category, $product_id]);
 
-    header("Location: admin_products.php");
+    header("Location: admin_produit.php");
     exit();
 }
 ?>
@@ -136,10 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
+    <?php include('admin_header.php'); ?>
+    <div class="container main-container main">
         <h2>Modifier le Produit</h2>
-        <form action="edit_product.php?id=<?php echo $product['id_produit']; ?>" method="POST" enctype="multipart/form-data">
+        <form action="edit_produit.php?id=<?php echo $product['id_produit']; ?>" method="POST" enctype="multipart/form-data">
             
             <div class="form-left">
                 <label for="name">Nom</label>

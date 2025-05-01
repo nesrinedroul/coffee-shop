@@ -2,7 +2,7 @@
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     echo "Access Denied. You must be an admin to view this page.";
-    header('Location: login.php'); 
+    header('Location: ../login.php'); 
     exit();
 }
 
@@ -21,14 +21,13 @@ $user = $stmt->fetch();
     <link rel="stylesheet" href="../assets/css/admin.css"> 
 </head>
 <body>
-    <div class="dashboard-container">
-        <?php include('admin_header.php'); ?>
-        <div class="main-content">
+    <?php include('admin_header.php'); ?>
+        <div class=" min-container main-content">
             <h1>Welcome, <?php echo $user['prenom']; ?>!</h1>
             <div class="admin-options">
                 <h3>What would you like to do?</h3>
                 <div class="option">
-                    <h4><a href="manage_users.php">Manage Commands</a></h4>
+                    <h4><a href="manage_commands.php">Manage Commands</a></h4>
                     <p>View, edit delete a command.</p>
                 </div>
                 <div class="option">
@@ -36,7 +35,7 @@ $user = $stmt->fetch();
                     <p>Add or update products in the store.</p>
                 </div>
             </div>
-        </div>
+      
     </div>
 </body>
 </html>
