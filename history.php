@@ -16,6 +16,24 @@ $date_fin = $_GET['date_fin'] ?? '';
 $stmt = $pdo->prepare("CALL HistoriqueClientFiltre(?, ?, ?, ?)");
 $stmt->execute([$user_id, $statut ?: null, $date_debut ?: null, $date_fin ?: null]);
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commande'])) {
+    $id_commande_to_cancel = (int) $_POST['id_commande'];
+    $stmt = $pdo->prepare("SELECT statut FROM commandes WHERE id_commande = ? AND user_id = ?");
+    $stmt->execute([$id_commande_to_cancel, $user_id]);
+    $commande = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($commande && $commande['statut'] === 'en_attente') {
+        // Cancel the order by updating its status
+        $updateStmt = $pdo->prepare("UPDATE commandes SET statut = 'annulee' WHERE id_commande = ?");
+        $updateStmt->execute([$id_commande_to_cancel]);
+        header("Location: history.php");
+        exit();
+    } else {
+        // Handle case where the order cannot be canceled
+        echo "Cette commande ne peut pas être annulée.";
+    }
+}
+
 ?>
 
 <!DOCTYPE html>

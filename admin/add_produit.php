@@ -6,97 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un Produit</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-        }
-
-        .main-container {
-            display: flex;
-            justify-content: center;
-            padding: 60px 20px;
-        }
-
-        .form-wrapper {
-            background-color: #ffffff;
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .form-wrapper h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 24px;
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #444;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="file"],
-        textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            background-color: #fefefe;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-
-        input:focus,
-        textarea:focus {
-            border-color: #007BFF;
-            outline: none;
-            background-color: #fff;
-        }
-
-        textarea {
-            resize: vertical;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .submit-btn:hover {
-            background-color: #0056b3;
-        }
-
-        @media (max-width: 600px) {
-            .form-wrapper {
-                padding: 25px 20px;
-            }
-        }
-    </style>
+    <link href="../assets/css/add_produit.css" rel="stylesheet" type="text/css">
 </head>
 <body>
     <?php include('admin_header.php'); ?>
-
     <div class="main-container">
         <div class="form-wrapper">
             <h2>Ajouter un Nouveau Produit</h2>

@@ -43,8 +43,6 @@ $stmt->execute([
     ':total' => $total
 ]);
 $id_commande = $pdo->lastInsertId();
-
-// Insérer les produits de la commande
 foreach ($commandeProduits as $item) {
     $stmt = $pdo->prepare("INSERT INTO commande_produit (id_commande, id_produit, quantite, prix_unitaire) 
                            VALUES (:id_commande, :id_produit, :quantite, :prix_unitaire)");
@@ -58,8 +56,6 @@ foreach ($commandeProduits as $item) {
 
 // Vider le panier après validation
 unset($_SESSION['cart']);
-
-// Rediriger vers une page de confirmation
 header("Location: confirmation.php?commande=$id_commande");
 exit();
 ?>
