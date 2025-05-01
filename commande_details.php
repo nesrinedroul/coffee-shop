@@ -1,3 +1,25 @@
+<?php
+session_start();
+include("includes/db.php");
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+if (!isset($_GET['id_commande'])) {
+    echo "Commande introuvable.";
+    exit();
+}
+
+$id_commande = (int) $_GET['id_commande'];
+$stmt = $pdo->prepare("CALL GetCommandeDetails(?)");
+$stmt->execute([$id_commande]);
+$details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->nextRowset();
+$totalRow = $stmt->fetch(PDO::FETCH_ASSOC);
+$total_commande = $totalRow['total_global'] ?? 0;
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,7 +30,7 @@
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom, #FAF9F6, #FFF3E0);
+            background:rgb(253, 248, 211);
             color: #3E2723;
         }
 
@@ -45,7 +67,7 @@
         }
 
         .details-table th {
-            background: linear-gradient(to right, #D7CCC8, #F3E5AB);
+            background:  #F3E5AB;
             color: #3E2723;
             font-weight: bold;
         }
@@ -68,7 +90,7 @@
             display: inline-block;
             margin: 30px auto 0;
             padding: 12px 24px;
-            background: linear-gradient(to right, #8B5E3C, #A1887F);
+            background:  #8B5E33;
             color: white;
             text-decoration: none;
             border-radius: 25px;
@@ -78,7 +100,7 @@
         }
 
         .back-button:hover {
-            background: linear-gradient(to right, #6D4C41, #8D6E63);
+            background:  #6D4C41;
         }
 
         @media (max-width: 768px) {

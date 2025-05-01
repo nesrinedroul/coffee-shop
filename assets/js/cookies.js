@@ -1,4 +1,3 @@
-// ✅ Fonctions utilitaires pour manipuler les cookies
 function setCookie(name, value, days = 365) {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
     document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
@@ -15,14 +14,10 @@ function setCookie(name, value, days = 365) {
     const customizeBtn = document.getElementById('customize-btn');
     const acceptAllBtn = document.getElementById('accept-all-btn');
     const form = document.getElementById('cookie-form');
-  
-    // 👀 Vérifie si le cookie existe
     const existingPrefs = getCookie('cookie_preferences');
     if (!existingPrefs) {
       popup.style.display = 'block';
     }
-  
-    // 🎯 Gérer "Tout accepter"
     acceptAllBtn.addEventListener('click', () => {
       const prefs = {
         essential: true,
@@ -33,14 +28,10 @@ function setCookie(name, value, days = 365) {
       popup.style.display = 'none';
       preferences.style.display = 'none';
     });
-  
-    // 🛠 Gérer le bouton "Personnaliser"
     customizeBtn.addEventListener('click', () => {
       popup.style.display = 'none';
       preferences.style.display = 'block';
     });
-  
-    // 💾 Gérer la soumission du formulaire de préférences
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const analytics = document.getElementById('analytics').checked;
