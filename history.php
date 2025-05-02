@@ -1,211 +1,144 @@
 <?php
 session_start();
-include("includes/db.php");
+require 'includes/db.php';
 
-if (!isset($_SESSION['username'])) {
+// Vérification si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
+// Récupérer l'id de l'utilisateur
 $user_id = $_SESSION['user_id'];
 
-$statut = $_GET['statut'] ?? '';
-$date_debut = $_GET['date_debut'] ?? '';
-$date_fin = $_GET['date_fin'] ?? '';
+// Récupérer l'historique des commandes
+try {
+    // Préparer la requête pour récupérer les commandes de l'utilisateur
+    $stmt = $pdo->prepare("SELECT * FROM commande WHERE id_utilisateur = ?");
+    $stmt->execute([$user_id]);
 
-$stmt = $pdo->prepare("CALL HistoriqueClientFiltre(?, ?, ?, ?)");
-$stmt->execute([$user_id, $statut ?: null, $date_debut ?: null, $date_fin ?: null]);
-$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commande'])) {
-    $id_commande_to_cancel = (int) $_POST['id_commande'];
-    $stmt = $pdo->prepare("SELECT statut FROM commandes WHERE id_commande = ? AND user_id = ?");
-    $stmt->execute([$id_commande_to_cancel, $user_id]);
-    $commande = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Vérifier si des commandes ont été récupérées
+    $commandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if ($commande && $commande['statut'] === 'en_attente') {
-        // Cancel the order by updating its status
-        $updateStmt = $pdo->prepare("UPDATE commandes SET statut = 'annulee' WHERE id_commande = ?");
-        $updateStmt->execute([$id_commande_to_cancel]);
-        header("Location: history.php");
-        exit();
-    } else {
-        // Handle case where the order cannot be canceled
-        echo "Cette commande ne peut pas être annulée.";
-    }
+} catch (Exception $e) {
+    $_SESSION['error'] = "Erreur lors de la récupération des commandes : " . $e->getMessage();
+    header("Location: index.php");
+    exit();
 }
 
+// Si une erreur survient lors de l'annulation de la commande
+if (isset($_SESSION['error'])) {
+    echo "<div class='alert alert-danger'>" . $_SESSION['error'] . "</div>";
+    unset($_SESSION['error']);
+}
+
+// Si une commande a été annulée avec succès
+if (isset($_SESSION['success'])) {
+    echo "<div class='alert alert-success'>" . $_SESSION['success'] . "</div>";
+    unset($_SESSION['success']);
+}
+
+// Traitement de l'annulation de la commande
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) {
+    $commande_id = $_POST['commande_id'];
+    $raison = $_POST['raison'];
+
+    try {
+        // Vérifier si la commande existe et si elle est en attente
+        $stmt = $pdo->prepare("SELECT * FROM commande WHERE id_commande = ? AND id_utilisateur = ? AND statut = 'en_attente'");
+        $stmt->execute([$commande_id, $user_id]);
+        $commande = $stmt->fetch();
+
+        if ($commande) {
+            // Mise à jour du statut de la commande à "annulée"
+            $stmt = $pdo->prepare("UPDATE commande SET statut = 'annulee' WHERE id_commande = ?");
+            $stmt->execute([$commande_id]);
+
+            // Enregistrement dans l'historique des annulations
+            $stmt = $pdo->prepare("INSERT INTO historique_commandes_annulees (id_commande, date_annulation, raison) VALUES (?, NOW(), ?)");
+            $stmt->execute([$commande_id, $raison]);
+
+            $_SESSION['success'] = "La commande a été annulée avec succès.";
+        } else {
+            $_SESSION['error'] = "Cette commande ne peut pas être annulée.";
+        }
+    } catch (Exception $e) {
+        $_SESSION['error'] = "Erreur lors de l'annulation de la commande : " . $e->getMessage();
+    }
+
+    // Redirection après l'annulation
+    header("Location: history.php");
+    exit();
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Historique des Commandes</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fff7f0;
-            margin: 0;
-            padding: 0;
-            color: #333;
+        .statut-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
         }
-
-        .container {
-            padding: 40px;
-            background-color: #fefefe;
-        }
-
-        h1 {
-            font-size: 28px;
-            color: #5c3d2e;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        form {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        form label {
-            font-weight: bold;
-            color: #333;
-        }
-
-        form select,
-        form input[type="date"],
-        form button {
-            padding: 8px 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        form button {
-            background-color: #8b4513;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f3e8dd;
-            color: #5c3d2e;
-        }
-
-        td form button,
-        td button {
-            background-color: #b22222;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-        }
-        #cancelModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        #cancelModal .modal-content {
-            background-color: #fff7f0;
-            padding: 30px;
-            border-radius: 10px;
-            width: 300px;
-            text-align: center;
-        }
-
-        #cancelModal .modal-content button {
-            margin: 10px 5px 0;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #cancelModal .modal-content .confirm {
-            background-color: #b22222;
-            color: white;
-        }
-
-        #cancelModal .modal-content .cancel {
-            background-color: #888;
-            color: white;
-        }
+        .statut-en_attente { background: #fff3cd; color: #856404; }
+        .statut-validee { background: #d4edda; color: #155724; }
+        .statut-annulee { background: #f8d7da; color: #721c24; }
+        .modal { /* Styles pour le modal */ }
     </style>
 </head>
 <body>
     <?php include('includes/header.php'); ?>
 
     <div class="container">
-        <h1>Historique de vos Commandes</h1>
+        <h1>Historique des Commandes</h1>
 
-        <form method="GET">
-            <label for="statut">Statut :</label>
-            <select name="statut" id="statut">
-                <option value="">Tous</option>
-                <option value="en_attente" <?= $statut == 'en_attente' ? 'selected' : '' ?>>En attente</option>
-                <option value="validee" <?= $statut == 'validee' ? 'selected' : '' ?>>Validée</option>
-                <option value="annulee" <?= $statut == 'annulee' ? 'selected' : '' ?>>Annulée</option>
-            </select>
-
-            <label for="date_debut">Date de début :</label>
-            <input type="date" name="date_debut" value="<?= $date_debut ?>">
-
-            <label for="date_fin">Date de fin :</label>
-            <input type="date" name="date_fin" value="<?= $date_fin ?>">
-
-            <button type="submit">Filtrer</button>
+        <!-- Formulaire de filtrage -->
+        <form method="GET" class="filter-form">
+            <!-- ... garder les mêmes champs de filtre ... -->
         </form>
 
-        <table>
+        <!-- Tableau des commandes -->
+        <table class="commandes-table">
             <thead>
                 <tr>
+                    <th>N° Commande</th>
                     <th>Date</th>
                     <th>Statut</th>
                     <th>Total</th>
-                    <th>Détails</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($result as $commande): ?>
+                <?php foreach ($commandes as $commande): ?>
                     <tr>
-                        <td><?= htmlspecialchars($commande['date_commande']) ?></td>
-                        <td><?= htmlspecialchars($commande['statut']) ?></td>
+                        <td>#<?= $commande['id_commande'] ?></td>
+                        <td><?= date('d/m/Y H:i', strtotime($commande['date_commande'])) ?></td>
+                        <td>
+                            <span class="statut-badge statut-<?= $commande['statut'] ?>">
+                                <?= ucfirst($commande['statut']) ?>
+                            </span>
+                            <?php if ($commande['statut'] === 'annulee'): ?>
+                                <br><small>Raison : <?= $commande['raison'] ?></small>
+                            <?php endif; ?>
+                        </td>
                         <td><?= number_format($commande['total'], 2) ?> DA</td>
                         <td>
-                            <form method="GET" action="commande_details.php">
-                                <input type="hidden" name="id_commande" value="<?= $commande['id_commande'] ?>">
-                                <button type="submit">Voir</button>
-                            </form>
-                        </td>
-                        <td>
+                            <a href="commande_details.php?id=<?= $commande['id_commande'] ?>" class="btn">
+                                Détails
+                            </a>
                             <?php if ($commande['statut'] === 'en_attente'): ?>
-                                <button type="button" onclick="openModal(<?= $commande['id_commande'] ?>)">Annuler</button>
-                            <?php else: ?>
-                                -
+                                <button 
+                                    type="button" 
+                                    class="btn btn-danger"
+                                    onclick="openCancelModal(<?= $commande['id_commande'] ?>)"
+                                >
+                                    Annuler
+                                </button>
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -213,24 +146,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commande'])) {
             </tbody>
         </table>
     </div>
-    <div id="cancelModal">
-        <div class="modal-content">
-            <p>Voulez-vous vraiment annuler cette commande ?</p>
-            <form method="POST" action="" id="cancelForm">
-                <input type="hidden" name="id_commande" id="modalCommandeId">
-                <button type="submit" class="confirm">Oui, annuler</button>
-                <button type="button" onclick="closeModal()" class="cancel">Annuler</button>
-            </form>
-        </div>
+
+   <!-- Modal d'annulation -->
+<div id="cancelModal" class="modal">
+    <div class="modal-content">
+        <h3>Annuler une commande</h3>
+        <form method="POST">
+            <input type="hidden" name="commande_id" id="commandeId">
+            <div class="form-group">
+                <label for="raison">Raison de l'annulation :</label>
+                <textarea 
+                    name="raison" 
+                    id="raison" 
+                    class="form-control"
+                    rows="3"
+                    required
+                ></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="submit" name="annuler_commande" class="btn btn-danger">
+                    Confirmer l'annulation
+                </button>
+                <button 
+                    type="button" 
+                    class="btn btn-secondary"
+                    onclick="closeCancelModal()"
+                >
+                    Fermer
+                </button>
+            </div>
+        </form>
     </div>
+</div>
+
 
     <script>
-        function openModal(id) {
-            document.getElementById('modalCommandeId').value = id;
-            document.getElementById('cancelModal').style.display = 'flex';
+        function openCancelModal(commandeId) {
+            document.getElementById('commandeId').value = commandeId;
+            document.getElementById('cancelModal').style.display = 'block';
         }
 
-        function closeModal() {
+        function closeCancelModal() {
             document.getElementById('cancelModal').style.display = 'none';
         }
     </script>

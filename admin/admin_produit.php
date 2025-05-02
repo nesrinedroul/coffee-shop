@@ -4,6 +4,19 @@ $sql = "SELECT * FROM produit";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$lowStock = $pdo->query("
+    SELECT nom, stock 
+    FROM produit 
+    WHERE stock < 5
+    ORDER BY stock ASC
+")->fetchAll();
+
+foreach ($lowStock as $product) {
+    echo "<div class='stock-warning'>
+            <i class='bx bx-error'></i>
+            Stock faible pour {$product['nom']} : {$product['stock']} restants
+          </div>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -57,4 +70,3 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </body>
 </html>
-s

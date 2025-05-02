@@ -1,33 +1,58 @@
 <?php
 session_start();
-include('includes/db.php');
-if (isset($_GET['remove'])) {
-    $productId = $_GET['remove'];
-    unset($_SESSION['cart'][$productId]);
-    header("Location: cart.php");
-    exit();
-}
-if (isset($_POST['update_quantity'])) {
-    $productId = $_POST['product_id'];
-    $quantity = $_POST['quantity'];
+require 'includes/db.php';
 
-    if ($quantity <= 0) {
+// Gestion des erreurs
+$error = '';
+if (isset($_SESSION['error'])) {
+    $error = '<div class="error-message">' . $_SESSION['error'] . '</div>';
+    unset($_SESSION['error']);
+}
+
+// Gestion de la suppression d'article
+if (isset($_GET['remove'])) {
+    $productId = (int)$_GET['remove'];
+    if (isset($_SESSION['cart'][$productId])) {
         unset($_SESSION['cart'][$productId]);
-    } else {
-        $_SESSION['cart'][$productId]['quantity'] = $quantity;
+        $_SESSION['success'] = "Produit retiré du panier";
     }
     header("Location: cart.php");
     exit();
 }
 
+// Mise à jour de la quantité
+if (isset($_POST['update_quantity'])) {
+    $productId = (int)$_POST['product_id'];
+    $quantity = max(1, min(20, (int)$_POST['quantity'])); // Limite 1-20
+
+    if (isset($_SESSION['cart'][$productId])) {
+        $_SESSION['cart'][$productId]['quantity'] = $quantity;
+        $_SESSION['success'] = "Quantité mise à jour";
+    }
+    header("Location: cart.php");
+    exit();
+}
+
+// Récupération des détails du panier
 $totalPrice = 0;
-if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
-    foreach ($_SESSION['cart'] as $productId => $cartItem) {
-        $sql = "SELECT * FROM produit WHERE id_produit = :id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':id' => $productId]);
-        $productDetails = $stmt->fetch(PDO::FETCH_ASSOC);
-        $totalPrice += $productDetails['prix'] * $cartItem['quantity'];
+$cartItems = [];
+if (!empty($_SESSION['cart'])) {
+    // Récupération de tous les IDs de produits en une seule requête
+    $productIds = array_keys($_SESSION['cart']);
+    $placeholders = rtrim(str_repeat('?,', count($productIds)), ',');
+    
+    $stmt = $pdo->prepare("SELECT * FROM produit WHERE id_produit IN ($placeholders)");
+    $stmt->execute($productIds);
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($products as $product) {
+        $productId = $product['id_produit'];
+        $quantity = $_SESSION['cart'][$productId]['quantity'];
+        $totalPrice += $product['prix'] * $quantity;
+        $cartItems[$productId] = [
+            'product' => $product,
+            'quantity' => $quantity
+        ];
     }
 }
 ?>
@@ -36,65 +61,158 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Panier</title>
-    <link rel="stylesheet" href="assets/css/cart.css">
+    <title>Mon Panier - CaféShop</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        .error-message {
+            padding: 15px;
+            background: #fee;
+            color: #c00;
+            border: 1px solid #fcc;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            padding: 15px;
+            background: #dfd;
+            color: #080;
+            border: 1px solid #cfc;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .cart-table th {
+            background: #5c3d2e;
+            color: white;
+            padding: 12px;
+        }
+
+        .cart-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .checkout-btn {
+            background: #5c3d2e;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: #4a3226;
+        }
+    </style>
 </head>
 <body>
-  <?php include('includes/header.php'); ?>
-  
-    <section class="cart">
-        <div class="container">
-            <h2>Articles dans votre panier</h2>
-            <?php if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0): ?>
-                <table>
-                    <thead>
+    <?php include('includes/header.php'); ?>
+
+    <main class="container">
+        <?php 
+        if (isset($_SESSION['success'])) {
+            echo '<div class="success-message">' . $_SESSION['success'] . '</div>';
+            unset($_SESSION['success']);
+        }
+        echo $error; 
+        ?>
+
+        <h1>Votre Panier</h1>
+
+        <?php if (!empty($cartItems)): ?>
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                        <th>Prix Unitaire</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($cartItems as $productId => $item): ?>
                         <tr>
-                            <th>Produit</th>
-                            <th>Quantité</th>
-                            <th>Prix Unitaire</th>
-                            <th>Prix Total</th>
-                            <th>Action</th>
+                            <td>
+                                <img src="<?= htmlspecialchars($item['product']['image']) ?>" 
+                                     alt="<?= htmlspecialchars($item['product']['nom']) ?>" 
+                                     class="cart-product-image">
+                                <?= htmlspecialchars($item['product']['nom']) ?>
+                            </td>
+                            <td>
+                                <form method="POST">
+                                    <input type="hidden" name="product_id" value="<?= $productId ?>">
+                                    <input type="number" 
+                                           name="quantity" 
+                                           class="quantity-input"
+                                           value="<?= $item['quantity'] ?>" 
+                                           min="1" 
+                                           max="20">
+                                    <button type="submit" name="update_quantity" class="btn">
+                                        <i class='bx bx-refresh'></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td><?= number_format($item['product']['prix'], 2) ?>€</td>
+                            <td><?= number_format($item['product']['prix'] * $item['quantity'], 2) ?>€</td>
+                            <td>
+                                <a href="cart.php?remove=<?= $productId ?>" class="text-danger">
+                                    <i class='bx bx-trash'></i>
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($_SESSION['cart'] as $productId => $cartItem): 
-                            $sql = "SELECT * FROM produit WHERE id_produit = :id";
-                            $stmt = $pdo->prepare($sql);
-                            $stmt->execute([':id' => $productId]);
-                            $product = $stmt->fetch(PDO::FETCH_ASSOC);
-                        ?>
-                            <tr>
-                                <td>
-                                    <img src="images/<?php echo $product['image']; ?>" alt="<?php echo $product['nom']; ?>" class="cart-product-image">
-                                    <span><?php echo $product['nom']; ?></span>
-                                </td>
-                                <td>
-                                    <form method="POST" action="cart.php">
-                                        <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
-                                        <input type="number" name="quantity" value="<?php echo $cartItem['quantity']; ?>" min="1" max="10">
-                                        <button type="submit" name="update_quantity">Mettre à jour</button>
-                                    </form>
-                                </td>
-                                <td><?php echo number_format($product['prix'], 2); ?>€</td>
-                                <td><?php echo number_format($product['prix'] * $cartItem['quantity'], 2); ?>€</td>
-                                <td><a href="cart.php?remove=<?php echo $productId; ?>" class="remove-item">Supprimer</a></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
 
-                <div class="cart-summary">
-                    <p><strong>Total: <?php echo number_format($totalPrice, 2); ?>€</strong></p>
-                    <a href="checkout.php" class="checkout-btn">Procéder à la commande</a>
-                </div>
+            <div class="cart-summary">
+                <h3>Total du panier : <?= number_format($totalPrice, 2) ?>€</h3>
+                <form action="checkout.php" method="POST">
+                    <button type="submit" class="checkout-btn">
+                        <i class='bx bx-credit-card'></i>
+                        Passer la commande
+                    </button>
+                </form>
+            </div>
 
-            <?php else: ?>
-                <p>Votre panier est vide. <a href="produit.php">Retourner aux produits</a></p>
-            <?php endif; ?>
-        </div>
-    </section>
+        <?php else: ?>
+            <div class="empty-cart">
+                <i class='bx bx-cart' style="font-size: 4rem; color: #5c3d2e;"></i>
+                <p>Votre panier est vide</p>
+                <a href="produit.php" class="btn">
+                    <i class='bx bx-store'></i>
+                    Voir nos produits
+                </a>
+            </div>
+        <?php endif; ?>
+    </main>
 
-   <?php include('includes/footer.php'); ?>
-    
+    <?php include('includes/footer.php'); ?>
 </body>
 </html>
