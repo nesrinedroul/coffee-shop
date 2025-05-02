@@ -106,4 +106,141 @@ input, button {
 h2 {
     text-align: center;
 }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    min-height: 100vh;
+    background: #f0f2f5;
+}
 
+.split-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.left-section {
+    flex: 1;
+    padding: 40px;
+    background: white;
+    border-radius: 15px 0 0 15px;
+}
+
+.right-section {
+    flex: 1;
+    padding: 40px;
+    background: #824508;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0 15px 15px 0;
+}
+
+.welcome-content {
+    text-align: center;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2em;
+}
+
+form {
+    width: 100%;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #666;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #824508;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background:#a2560a;
+}
+
+.alternate-action {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.alternate-action a {
+    color: #824508;
+    text-decoration: none;
+}
+
+.alternate-action a:hover {
+    text-decoration: underline;
+}
+
+/* Right section styles */
+.welcome-content h2 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+.welcome-content p {
+    margin-bottom: 30px;
+    font-size: 1.1em;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 12px 30px;
+    background: white;
+    color:#824508;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+.cta-button:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .split-container {
+        flex-direction: column;
+        margin: 20px;
+    }
+
+    .right-section {
+        border-radius: 0 0 15px 15px;
+        padding: 30px 20px;
+    }
+
+    .left-section {
+        border-radius: 15px 15px 0 0;
+    }
+}

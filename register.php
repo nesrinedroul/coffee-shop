@@ -59,73 +59,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Inscription</title>
     <link rel="stylesheet" href="assets/css/register.css">
-    <style>
-        .error-text {
-            color: red;
-            font-size: 0.9em;
-        }
-
-        .error-field {
-            border: 1px solid red;
-        }
-
-        .success-message {
-            color: green;
-        }
-
-        .error-message {
-            color: red;
-        }
-
-        .container {
-            width: 400px;
-            margin: auto;
-            padding: 30px;
-            border: 1px solid #ddd;
-            margin-top: 50px;
-            border-radius: 10px;
-            font-family: Arial, sans-serif;
-        }
-    </style>
 </head>
 <body>
+    <div class="split-container register">
+        <!-- Illustration Section -->
+        <div class="illustration-section">
+            <div class="welcome-content">
+                <h2>Bienvenue !</h2>
+                <p>Déjà membre de notre communauté ?</p>
+                <a href="login.php" class="cta-button">Se connecter</a>
+            </div>
+        </div>
 
-<div class="container">
-    <h2>Créer un compte</h2>
+        <!-- Form Section -->
+        <div class="form-section">
+            <div class="form-header">
+                <h2>Créer un compte</h2>
+                <p>Rejoignez notre plateforme en quelques étapes simples</p>
+            </div>
 
-    <?php if (isset($_SESSION['error'])): ?>
-        <p class="error-message"><?= $_SESSION['error']; unset($_SESSION['error']); ?></p>
-    <?php elseif (isset($_SESSION['success'])): ?>
-        <p class="success-message"><?= $_SESSION['success']; unset($_SESSION['success']); ?></p>
-    <?php endif; ?>
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+            <?php elseif (isset($_SESSION['success'])): ?>
+                <div class="alert success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+            <?php endif; ?>
 
-    <form method="POST" action="register.php" id="registerForm">
-        <label for="nom">Nom</label><br>
-        <input type="text" id="nom" name="nom" required>
-        <div class="error-text" id="error-nom"></div><br>
+            <form method="POST" action="register.php" id="registerForm">
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                    <div class="error-text" id="error-prenom"></div>
+                </div>
 
-        <label for="prenom">Prénom</label><br>
-        <input type="text" id="prenom" name="prenom" required>
-        <div class="error-text" id="error-prenom"></div><br>
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" required>
+                    <div class="error-text" id="error-nom"></div>
+                </div>
 
-        <label for="email">Email</label><br>
-        <input type="email" id="email" name="email" required>
-        <div class="error-text" id="error-email"></div><br>
+                <div class="form-group">
+                    <label for="email">Adresse email</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error-text" id="error-email"></div>
+                </div>
 
-        <label for="mot_de_passe">Mot de passe</label><br>
-        <input type="password" id="mot_de_passe" name="mot_de_passe" required>
-        <div class="error-text" id="error-password"></div><br>
+                <div class="form-group">
+                    <label for="mot_de_passe">Mot de passe</label>
+                    <input type="password" id="mot_de_passe" name="mot_de_passe" required>
+                    <div class="error-text" id="error-password"></div>
+                </div>
 
-        <label for="confirm_mot_de_passe">Confirmer le mot de passe</label><br>
-        <input type="password" id="confirm_mot_de_passe" name="confirm_mot_de_passe" required>
-        <div class="error-text" id="error-confirm"></div><br>
+                <div class="form-group">
+                    <label for="confirm_mot_de_passe">Confirmer le mot de passe</label>
+                    <input type="password" id="confirm_mot_de_passe" name="confirm_mot_de_passe" required>
+                    <div class="error-text" id="error-confirm"></div>
+                </div>
 
-        <button type="submit">S'inscrire</button>
-    </form>
+                <button type="submit" class="primary-btn">S'inscrire</button>
+            </form>
 
-    <p>Déjà inscrit ? <a href="login.php">Connectez-vous ici</a></p>
-</div>
-
+            <div class="legal-text">
+                <p>En cliquant sur S'inscrire, vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre <a href="#">Politique de confidentialité</a>.</p>
+            </div>
+        </div>
+    </div>
 <script>
     document.getElementById('registerForm').addEventListener('submit', function (e) {
         let valid = true;
