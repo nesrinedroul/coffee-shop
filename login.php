@@ -48,22 +48,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </head>
 <body>
-    <div class="container">
-        <h2>Se connecter</h2>
-        <?php if (isset($_SESSION['error'])): ?>
-            <p style="color:red"><?= $_SESSION['error']; unset($_SESSION['error']); ?></p>
-        <?php endif; ?>
-        <form action="login.php" method="POST">
-            <label>Email</label>
-            <input type="email" name="email" required><br><br>
+    <div class="split-container">
+        <!-- Login Form Section -->
+        <div class="left-section">
+            <h2>Connexion</h2>
+            <?php if (isset($_SESSION['error'])): ?>
+                <p class="error-message"><?= $_SESSION['error']; unset($_SESSION['error']); ?></p>
+            <?php endif; ?>
+            <form action="login.php" method="POST">
+                <label>Email</label>
+                <input type="email" name="email" required>
 
-            <label>Mot de passe</label>
-            <input type="password" name="mot_de_passe" required><br><br>
+                <label>Mot de passe</label>
+                <input type="password" name="mot_de_passe" required>
 
-            <button type="submit">Se connecter</button>
-        </form>
-        <p>Pas encore inscrit ? <a href="register.php">Créer un compte</a></p>
+                <button type="submit">Se connecter</button>
+            </form>
+            <p class="alternate-action">Mot de passe oublié ? <a href="#">Réinitialiser</a></p>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="right-section">
+            <div class="welcome-content">
+                <h2>Bienvenue !</h2>
+                <p>Si vous n'avez pas encore de compte, inscrivez-vous pour commencer votre expérience.</p>
+                <a href="register.php" class="cta-button">Créer un compte</a>
+            </div>
+        </div>
     </div>
-   
 </body>
 </html>
