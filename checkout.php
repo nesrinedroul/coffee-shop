@@ -1,61 +1,90 @@
 <?php
 session_start();
-include('includes/db.php');
+require 'includes/db.php';
 
-// Vérifier que l'utilisateur est connecté
-if (!isset($_SESSION['username'])) {
+// Vérifier que la requête est bien POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $_SESSION['error'] = "Accès non autorisé";
+    header("Location: cart.php");
+    exit();
+}
+
+// Vérifier la connexion utilisateur
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['error'] = "Connectez-vous pour finaliser la commande";
     header("Location: login.php");
     exit();
 }
 
-// Vérifier que le panier n'est pas vide
-if (!isset($_SESSION['cart']) || count($_SESSION['cart']) === 0) {
-    echo "Votre panier est vide.";
+// Vérifier le panier
+if (empty($_SESSION['cart'])) {
+    $_SESSION['error'] = "Votre panier est vide";
+    header("Location: cart.php");
     exit();
 }
 
-// Initialiser le total
-$total = 0;
-$commandeProduits = [];
+try {
+    $pdo->beginTransaction();
 
-// Calculer le total et préparer les données
-foreach ($_SESSION['cart'] as $productId => $item) {
-    $stmt = $pdo->prepare("SELECT * FROM produit WHERE id_produit = :id");
-    $stmt->execute([':id' => $productId]);
-    $produit = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Étape 1 : Création de la commande
+    $stmt = $pdo->prepare("INSERT INTO commande (id_utilisateur, date_commande, statut, total) 
+                          VALUES (:user_id, NOW(), 'en_attente', 0)");
+    $stmt->execute([':user_id' => $_SESSION['user_id']]);
+    $commande_id = $pdo->lastInsertId();
 
-    if (!$produit) continue;
+    // Étape 2 : Insertion des produits
+    foreach ($_SESSION['cart'] as $product_id => $item) {
+        $stmt = $pdo->prepare("INSERT INTO commande_produit (id_commande, id_produit, quantite) 
+                              VALUES (:commande_id, :product_id, :quantity)");
+        $stmt->execute([
+            ':commande_id' => $commande_id,
+            ':product_id' => $product_id,
+            ':quantity' => $item['quantity']
+        ]);
+    }
 
-    $prixUnitaire = $produit['prix'];
-    $quantite = $item['quantity'];
-    $total += $prixUnitaire * $quantite;
+    // Étape 3 : Calcul du total
+    $stmt = $pdo->prepare("UPDATE commande c
+                          SET total = (
+                              SELECT SUM(cp.quantite * p.prix)
+                              FROM commande_produit cp
+                              JOIN produit p ON cp.id_produit = p.id_produit
+                              WHERE cp.id_commande = :commande_id
+                          )
+                          WHERE c.id_commande = :commande_id");
+    $stmt->execute([':commande_id' => $commande_id]);
 
-    $commandeProduits[] = [
-        'id_produit' => $productId,
-        'quantite' => $quantite,
-        'prix_unitaire' => $prixUnitaire
-    ];
+    $pdo->commit();
+
+    // Réinitialiser le panier
+    unset($_SESSION['cart']);
+    $_SESSION['success'] = "Commande #$commande_id validée avec succès!";
+    header("Location: confirmation.php?id=$commande_id");
+    exit();
+
+} catch (PDOException $e) {
+    $pdo->rollBack();
+    
+    // Gestion des erreurs spécifiques
+    $error_message = $e->getMessage();
+    
+    if (strpos($error_message, 'Stock insuffisant') !== false) {
+        // Extraire les détails de l'erreur
+        preg_match('/Stock insuffisant pour le produit #(\d+) \(Disponible: (\d+), Demandé: (\d+)\)/', $error_message, $matches);
+        
+        if (!empty($matches)) {
+            $product_id = $matches[1];
+            $stock = $matches[2];
+            $requested = $matches[3];
+            
+            $_SESSION['error'] = "Stock insuffisant pour le produit #$product_id. Disponible: $stock, Demandé: $requested";
+        } else {
+            $_SESSION['error'] = "Erreur de stock : " . $error_message;
+        }
+    } else {
+        $_SESSION['error'] = "Erreur technique : " . $error_message;
+    }
+    
+    header("Location: cart.php");
+    exit();
 }
-
-$stmt = $pdo->prepare("INSERT INTO commande (id_utilisateur, date_commande, statut, total) VALUES (:id_user, NOW(), 'en_attente', :total)");
-$stmt->execute([
-    ':id_user' => $_SESSION['user_id'],
-    ':total' => $total
-]);
-$id_commande = $pdo->lastInsertId();
-foreach ($commandeProduits as $item) {
-    $stmt = $pdo->prepare("INSERT INTO commande_produit (id_commande, id_produit, quantite, prix_unitaire) 
-                           VALUES (:id_commande, :id_produit, :quantite, :prix_unitaire)");
-    $stmt->execute([
-        ':id_commande' => $id_commande,
-        ':id_produit' => $item['id_produit'],
-        ':quantite' => $item['quantite'],
-        ':prix_unitaire' => $item['prix_unitaire']
-    ]);
-}
-
-// Vider le panier après validation
-unset($_SESSION['cart']);
-header("Location: confirmation.php?commande=$id_commande");
-exit();
-?>
