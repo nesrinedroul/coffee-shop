@@ -23,3 +23,4 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     http_response_code(400);
     echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
 }
+?>
