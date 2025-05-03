@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$name, $description, $price, $stock, $imagePath, $category]);
         
-        header("Location: admin_products.php?success=1");
+        header("Location: admin_produit.php?success=1");
         exit();
     } catch (PDOException $e) {
         die("Erreur lors de l'ajout du produit : " . $e->getMessage());
@@ -305,8 +305,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <?php include('admin_header.php'); ?>
     
-    <div class="admin-container">
-        <div class="main-content">
+    <div class="main-content main main-container admin-container">
+        <div class="">
             <div class="form-card">
                 <div class="form-header">
                     <h2>Ajouter un Nouveau Produit</h2>
