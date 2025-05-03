@@ -128,9 +128,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
                         </td>
                         <td><?= number_format($commande['total'], 2) ?> DA</td>
                         <td>
-                            <a href="commande_details.php?id=<?= $commande['id_commande'] ?>" class="btn">
+                            <form action='commande_details.php' methode='get'>
+                             <button class="btn" type="submit" name="id_commande" value="<?= $commande['id_commande'] ?>">
                                 Détails
-                            </a>
+                            </button>
+                            </form>
                             <?php if ($commande['statut'] === 'en_attente'): ?>
                                 <button 
                                     type="button" 
@@ -190,7 +192,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
             document.getElementById('cancelModal').style.display = 'none';
         }
     </script>
-
     <?php include('includes/footer.php'); ?>
 </body>
 </html>
