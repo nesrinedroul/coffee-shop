@@ -82,7 +82,7 @@ $lowStock = $pdo->query("
     <?php endforeach; ?>
 </div>
 
-<div class="main-container main-content">
+<div class="main-container main-content main">
     <div class="header">
         <h1>Produits</h1>
         <a href="add_produit.php" class="btn">+ Ajouter Produit</a>

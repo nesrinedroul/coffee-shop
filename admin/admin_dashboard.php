@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 }
 
 require '../includes/db.php'; 
+include '../includes/functions.php';
 $stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE id_utilisateur = :user_id");
 $stmt->execute(['user_id' => $_SESSION['user_id']]);
 $user = $stmt->fetch();
@@ -252,7 +253,7 @@ th {
                         <span>Voir les Commandes</span>
                     </a>
                     
-                    <a href="users.php" class="action-card">
+                    <a href="admin_commande.php" class="action-card">
                         <i class='bx bx-group'></i>
                         <span>Gérer les Utilisateurs</span>
                     </a>

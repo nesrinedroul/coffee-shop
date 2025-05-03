@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #4f46e5;
+    --primary-color: #6f4e37;
     --border-color: #e5e7eb;
     --text-color: #111827;
     --background-color: #f9fafb;
@@ -10,6 +10,7 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     background-color: var(--background-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .sidebar {
