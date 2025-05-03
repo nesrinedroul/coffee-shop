@@ -1,6 +1,6 @@
 :root {
-    --primary: #007bff;
-    --primary-hover: #0056b3;
+    --primary:rgb(107, 59, 0);
+    --primary-hover: #6e4409;
     --background: #f8f9fa;
     --text: #2c3e50;
     --error: #dc3545;
@@ -30,8 +30,8 @@ body {
     border-radius: 1.5rem;
     box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     max-width: 1200px;
-    width: 95%;
-    margin: 2rem;
+    width: 85%;
+    margin: 3rem;
     overflow: hidden;
 }
 
@@ -44,7 +44,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-image: linear-gradient(135deg, var(--primary) 0%, #0062cc 100%);
+    background-image: --primary;
 }
 
 .welcome-content {
