@@ -32,23 +32,17 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Coffee Bliss ☕ - Boutique en ligne</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-    <link rel="stylesheet" href="assets/css/index.css">
-    <meta charset="UTF-8">
     <title>Coffee Ness ☕</title>
     <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 </head>
 <body>
 
 <?php include('includes/header.php'); ?>
-
-<!-- Enhanced Hero Section -->
 <section class="hero">
     <div class="hero-content">
         <?php if (isset($_SESSION['username'])): ?>
@@ -60,8 +54,6 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="#products" class="btn-hero">Explorer la collection</a>
     </div>
 </section>
-
-<!-- Modern Search Section -->
 <section class="search-section">
     <form action="produit.php" method="get">
         <input type="text" name="search" placeholder="Rechercher un produit..." value="<?= htmlspecialchars($search) ?>">
@@ -81,7 +73,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h2 class="section-title">Nouveautés</h2>
         <div class="products-slider">
             <?php foreach ($latestProducts as $produit): ?>
-                <div class="product-card">
+                <div class="product-card product-card-slide">
                     <div class="product-image">
                         <img src="<?= htmlspecialchars($produit['image']) ?>" alt="<?= htmlspecialchars($produit['nom']) ?>">
                         <span class="badge new">Nouveau</span>

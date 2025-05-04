@@ -1,24 +1,25 @@
 <?php
 include('../includes/db.php');
 session_start();
-// Vérifier si l'utilisateur est un admin
+$notification = $_SESSION['notification'] ?? [];
+unset($_SESSION['notification']);
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['notification']['message'] = "Accès non autorisé !";
+    $_SESSION['notification']['type'] = 'error';
     header("Location: index.php");
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Récupérer les données du formulaire
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
     $price = (float) $_POST['price'];
     $stock = (int) $_POST['stock'];
     $category = trim($_POST['category']);
-    $imageUrl = trim($_POST['image_url'] ?? ''); // Nouveau champ pour l'URL
-
+    $imageUrl = trim($_POST['image_url'] ?? '');
     $imagePath = null;
 
-    // Vérifier si un fichier image a été uploadé
+   
     if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] == UPLOAD_ERR_OK) {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $fileType = mime_content_type($_FILES['image_upload']['tmp_name']);
@@ -26,13 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!in_array($fileType, $allowedTypes)) {
             die("Type de fichier non autorisé. Veuillez télécharger une image JPG, PNG, GIF ou WebP.");
         }
-
-        // Créer le dossier uploads s'il n'existe pas
         if (!file_exists('../uploads')) {
             mkdir('../uploads', 0777, true);
         }
-
-        // Déplacer l'image dans le dossier uploads/
         $imageName = uniqid() . '_' . basename($_FILES['image_upload']['name']);
         $imagePath = 'uploads/' . $imageName;
         if (!move_uploaded_file($_FILES['image_upload']['tmp_name'], '../' . $imagePath)) {
@@ -59,20 +56,62 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Veuillez fournir soit une image à uploader, soit une URL d'image valide.");
     }
 
-    // Insertion du produit en base de données
+ // Avant le try-catch
+if ($stock < 0) {
+    $_SESSION['notification']['message'] = "Le stock ne peut pas être négatif !";
+    $_SESSION['notification']['type'] = 'error';
+    $_SESSION['old_input'] = $_POST;
+    header("Location: add_produit.php");
+    exit();
+}
+
+// Valider aussi le prix si nécessaire
+if ($price <= 0) {
+    $_SESSION['notification']['message'] = "Le prix doit être supérieur à 0 !";
+    $_SESSION['notification']['type'] = 'error';
+    $_SESSION['old_input'] = $_POST;
+    header("Location: add_produit.php");
+    exit();
+}
     try {
         $sql = "INSERT INTO produit (nom, description, prix, stock, image, categorie, date_ajout) 
                 VALUES (?, ?, ?, ?, ?, ?, NOW())";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$name, $description, $price, $stock, $imagePath, $category]);
-        
+        $_SESSION['notification']['message'] = "Produit ajouté avec succès !";
+        $_SESSION['notification']['type'] = 'success';
         header("Location: admin_produit.php?success=1");
         exit();
-    } catch (PDOException $e) {
-        die("Erreur lors de l'ajout du produit : " . $e->getMessage());
+    }  catch (PDOException $e) {
+        // Capture des erreurs SQL et des triggers
+        $errorMessage = $e->getMessage();
+        
+        // Messages personnalisés pour les contraintes
+        $constraintMessages = [
+            'stock_negative' => 'Le stock ne peut pas être négatif !',
+            'price_positive' => 'Le prix doit être supérieur à 0 !',
+            'invalid_category' => 'Catégorie invalide !'
+        ];
+
+        foreach ($constraintMessages as $key => $message) {
+            if (strpos($errorMessage, $key) !== false) {
+                $_SESSION['notification']['message'] = $message;
+                break;
+            }
+        }
+
+        if (!isset($_SESSION['notification']['message'])) {
+            $_SESSION['notification']['message'] = "Erreur : " . $errorMessage;
+            $_SESSION['notification']['type'] = 'error';
+            $_SESSION['old_input'] = $_POST;
+            header("Location: add_produit.php");
+            exit();
+        }
     }
 }
-?>
+$oldInput = $_SESSION['old_input'] ?? [];
+unset($_SESSION['old_input']); 
+ ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -300,12 +339,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 padding: 1.5rem;
             }
         }
+        /* Ajoutez ceci dans la section <style> */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.error {
+    background: #ef4444;
+}
+
+.notification.success {
+    background: #10b981;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
     </style>
 </head>
 <body>
+
     <?php include('admin_header.php'); ?>
     
     <div class="main-content main main-container admin-container">
+    <?php if (isset($_SESSION['notification'])): ?>
+     <div class="notification <?= $_SESSION['notification']['type'] ?>" 
+     id="notification"
+     onclick="this.style.animation = 'fadeOut 0.3s forwards'">
+    <i class='bx <?= $_SESSION['notification']['type'] === 'error' ? 'bxs-error' : 'bxs-check-circle' ?>'></i>
+    <?= $_SESSION['notification']['message'] ?>
+</div>
+<?php unset($_SESSION['notification']); endif; ?>
+
         <div class="">
             <div class="form-card">
                 <div class="form-header">
@@ -432,6 +513,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 imageUpload.dispatchEvent(event);
             }
         });
+        setTimeout(() => {
+        const notification = document.getElementById('notification');
+        if (notification) {
+            notification.style.animation = 'fadeOut 0.3s forwards';
+        }
+    }, 5000);
     </script>
 </body>
 </html>

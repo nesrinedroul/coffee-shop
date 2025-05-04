@@ -62,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="split-container register">
-        <!-- Illustration Section -->
         <div class="illustration-section">
             <div class="welcome-content">
                 <h2>Bienvenue !</h2>
@@ -70,12 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="login.php" class="cta-button">Se connecter</a>
             </div>
         </div>
-
-        <!-- Form Section -->
         <div class="form-section">
             <div class="form-header">
                 <h2>Créer un compte</h2>
-                <p>Rejoignez notre plateforme en quelques étapes simples</p>
+                <p>Rejoignez notre coffee community en quelques étapes simples</p>
             </div>
 
             <?php if (isset($_SESSION['error'])): ?>
@@ -136,21 +133,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const mdp = document.getElementById('mot_de_passe');
         const confirm = document.getElementById('confirm_mot_de_passe');
 
-        // Validation du nom
         if (nom.value.length < 2 || nom.value.length > 30 || !/^[a-zA-ZÀ-ÿ\- ]+$/.test(nom.value)) {
             document.getElementById('error-nom').textContent = "Le nom doit contenir entre 2 et 30 lettres.";
             nom.classList.add('error-field');
             valid = false;
         }
-
-        // Validation du prénom
         if (prenom.value.length < 2 || prenom.value.length > 30 || !/^[a-zA-ZÀ-ÿ\- ]+$/.test(prenom.value)) {
             document.getElementById('error-prenom').textContent = "Le prénom doit contenir entre 2 et 30 lettres.";
             prenom.classList.add('error-field');
             valid = false;
         }
-
-        // Validation de l'email
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
             document.getElementById('error-email').textContent = "L'email est invalide.";
             email.classList.add('error-field');
