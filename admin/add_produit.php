@@ -36,11 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             die("Erreur lors du téléchargement de l'image.");
         }
     } 
-    // Sinon, vérifier si une URL a été fournie
+  
     elseif (!empty($imageUrl)) {
-        // Valider que c'est une URL d'image valide
+
         if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-            // Vérifier l'extension de l'image
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
             $urlExtension = strtolower(pathinfo(parse_url($imageUrl, PHP_URL_PATH), PATHINFO_EXTENSION));
             
@@ -50,13 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 die("L'URL doit pointer vers une image (JPG, PNG, GIF ou WebP)");
             }
         } else {
-            die("URL d'image invalide");
+            die("URL de l'image invalide");
         }
     } else {
         die("Veuillez fournir soit une image à uploader, soit une URL d'image valide.");
     }
 
- // Avant le try-catch
 if ($stock < 0) {
     $_SESSION['notification']['message'] = "Le stock ne peut pas être négatif !";
     $_SESSION['notification']['type'] = 'error';
@@ -65,7 +63,6 @@ if ($stock < 0) {
     exit();
 }
 
-// Valider aussi le prix si nécessaire
 if ($price <= 0) {
     $_SESSION['notification']['message'] = "Le prix doit être supérieur à 0 !";
     $_SESSION['notification']['type'] = 'error';
@@ -83,10 +80,7 @@ if ($price <= 0) {
         header("Location: admin_produit.php?success=1");
         exit();
     }  catch (PDOException $e) {
-        // Capture des erreurs SQL et des triggers
         $errorMessage = $e->getMessage();
-        
-        // Messages personnalisés pour les contraintes
         $constraintMessages = [
             'stock_negative' => 'Le stock ne peut pas être négatif !',
             'price_positive' => 'Le prix doit être supérieur à 0 !',
@@ -153,10 +147,9 @@ unset($_SESSION['old_input']);
         .main-content {
             flex: 1;
             padding: 2rem;
-            margin-left: 250px; /* Adjust based on your sidebar width */
+            margin-left: 250px; 
         }
-        
-        /* Form styling */
+    
         .form-card {
             background: white;
             border-radius: 12px;
@@ -224,8 +217,6 @@ unset($_SESSION['old_input']);
             min-height: 120px;
             resize: vertical;
         }
-        
-        /* Image upload styles */
         .image-uploader {
             border: 2px dashed var(--border);
             border-radius: 8px;
@@ -266,8 +257,6 @@ unset($_SESSION['old_input']);
             display: none;
             border-radius: 4px;
         }
-        
-        /* Tabs styling */
         .tabs {
             display: flex;
             margin-bottom: 1rem;
@@ -303,7 +292,6 @@ unset($_SESSION['old_input']);
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Button styling */
         .submit-btn {
             background-color: var(--primary);
             color: white;
@@ -323,8 +311,6 @@ unset($_SESSION['old_input']);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(111, 78, 55, 0.2);
         }
-        
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -339,7 +325,6 @@ unset($_SESSION['old_input']);
                 padding: 1.5rem;
             }
         }
-        /* Ajoutez ceci dans la section <style> */
 .notification {
     position: fixed;
     top: 20px;
@@ -458,7 +443,6 @@ unset($_SESSION['old_input']);
     </div>
 
     <script>
-        // Tab functionality
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -469,8 +453,6 @@ unset($_SESSION['old_input']);
                 document.getElementById(tabId + '-tab').classList.add('active');
             });
         });
-
-        // Image preview for file upload
         const imageUpload = document.getElementById('image_upload');
         const imagePreview = document.getElementById('image-preview');
         
@@ -487,8 +469,6 @@ unset($_SESSION['old_input']);
                 reader.readAsDataURL(file);
             }
         });
-
-        // Drag and drop for image upload
         const uploader = document.querySelector('.image-uploader');
         
         uploader.addEventListener('dragover', (e) => {
