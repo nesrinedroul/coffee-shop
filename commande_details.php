@@ -2,7 +2,7 @@
 session_start();
 include("includes/db.php");
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
@@ -29,108 +29,108 @@ $orderStatus = $stmt->fetch(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <title>Détails de la commande</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
     <style>
         body {
-            margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: rgb(253, 248, 211);
-            color: #3E2723;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
         }
 
-        h1 {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 32px;
-            color: #4E342E;
-        }
-
-        .detail-container {
-            padding: 40px;
-            background-color: #FFFFFF;
-            max-width: 1000px;
-            margin: 40px auto;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .details-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-            background-color: #FFF8E1;
+        .order-details-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
             border-radius: 12px;
-            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .details-table th,
-        .details-table td {
-            padding: 14px;
+        .order-details-container h1 {
             text-align: center;
-            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
         }
 
-        .details-table th {
-            background: #F3E5AB;
-            color: #3E2723;
-            font-weight: bold;
+        .order-status-cancelled {
+            background-color: #ffebe6;
+            color: #d9534f;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
         }
 
-        .details-table td {
-            background-color: #FFFDF7;
-            border-bottom: 1px solid #E0D8CF;
+        .order-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        .details-table tr:last-child td {
-            border-bottom: none;
+        .order-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex: 1 1 300px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .total-row td {
-            font-weight: bold;
-            background-color: #F5F5DC;
+        .product-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
         }
 
-        .status-row {
-            background-color: #FFEBEE;
-            color: #D32F2F;
+        .item-details {
+            display: flex;
+            flex-direction: column;
         }
 
-        .back-button {
-            display: inline-block;
-            margin: 30px auto 0;
-            padding: 12px 24px;
-            background: #8B5E33;
-            color: white;
+        .item-details h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .item-details p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+
+        .order-summary {
+            margin-top: 30px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .back-to-history {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-to-history a {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
             text-decoration: none;
-            border-radius: 25px;
-            text-align: center;
-            font-weight: bold;
-            transition: background 0.3s ease;
+            border-radius: 8px;
+            transition: background-color 0.3s;
         }
 
-        .back-button:hover {
-            background: #6D4C41;
+        .back-to-history a:hover {
+            background-color: #555;
         }
 
         @media (max-width: 768px) {
-            .detail-container {
-                padding: 20px;
-                margin: 20px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .details-table th,
-            .details-table td {
-                font-size: 14px;
-                padding: 10px;
-            }
-
-            .back-button {
-                width: 100%;
-                text-align: center;
+            .order-items {
+                flex-direction: column;
             }
         }
     </style>
@@ -138,49 +138,36 @@ $orderStatus = $stmt->fetch(PDO::FETCH_ASSOC);
 <body>
     <?php include('includes/header.php'); ?>
 
-    <div class="detail-container">
-        <h1>Détails de la Commande #<?= htmlspecialchars($id_commande) ?></h1>
-
-        <!-- Display order status if it's canceled -->
+    <div class="order-details-container">
+        <h1>Commande #<?= htmlspecialchars($id_commande) ?></h1>
         <?php if ($orderStatus && $orderStatus['statut'] == 'annulee'): ?>
-            <div class="status-row">
-                <strong>Status de la commande :</strong> Annulée
-                <br>
-               
-            </div>
+            <div class="order-status-cancelled">Commande Annulée</div>
         <?php endif; ?>
 
         <?php if (count($details) > 0): ?>
-            <table class="details-table">
-                <thead>
-                    <tr>
-                        <th>Produit</th>
-                        <th>Quantité</th>
-                        <th>Prix unitaire</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($details as $item): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($item['produit']) ?></td>
-                            <td><?= htmlspecialchars($item['quantite']) ?></td>
-                            <td><?= number_format($item['prix_unitaire'], 2) ?> DA</td>
-                            <td><?= number_format($item['total_par_produit'], 2) ?> DA</td>
-                        </tr>
-                    <?php endforeach; ?>
-                    <tr class="total-row">
-                        <td colspan="3" style="text-align: right;">Total de la commande :</td>
-                        <td><?= number_format($total_commande, 2) ?> DA</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="order-items">
+                <?php foreach ($details as $item): ?>
+                    <div class="order-item">
+                      <img src="<?= htmlspecialchars($produit['image']) ?>" alt="<?= htmlspecialchars($produit['nom']) ?>" class="product-image">
+                        <div class="item-details">
+                            <h2><?= htmlspecialchars($item['produit']) ?></h2>
+                            <p>Quantité: <?= htmlspecialchars($item['quantite']) ?></p>
+                            <p>Prix unitaire: <?= number_format($item['prix_unitaire'], 2) ?> DA</p>
+                            <p>Total: <?= number_format($item['total_par_produit'], 2) ?> DA</p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="order-summary">
+                <h3>Total de la commande:</h3>
+                <p><?= number_format($total_commande, 2) ?> DA</p>
+            </div>
         <?php else: ?>
             <p>Aucun produit trouvé pour cette commande.</p>
         <?php endif; ?>
 
-        <div style="text-align: center;">
-            <a href="history.php" class="back-button">← Retour à l'historique</a>
+        <div class="back-to-history">
+            <a href="history.php">← Retour à l'historique</a>
         </div>
     </div>
 
