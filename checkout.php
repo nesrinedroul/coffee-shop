@@ -10,13 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Vérifier la connexion utilisateur
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     $_SESSION['error'] = "Connectez-vous pour finaliser la commande";
     header("Location: login.php");
     exit();
 }
-
-// Vérifier le panier
 if (empty($_SESSION['cart'])) {
     $_SESSION['error'] = "Votre panier est vide";
     header("Location: cart.php");

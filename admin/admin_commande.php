@@ -364,7 +364,6 @@ function formatStatut($statut) {
 </div>
 
 <script>
-   <script>
 document.querySelectorAll('.statut-selector').forEach(selector => {
     selector.addEventListener('change', function () {
         const orderId = this.dataset.order;

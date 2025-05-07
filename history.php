@@ -2,22 +2,16 @@
 session_start();
 require 'includes/db.php';
 
-// Vérification si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
-
-// Récupérer l'id de l'utilisateur
 $user_id = $_SESSION['user_id'];
 
-// Récupérer l'historique des commandes
 try {
-    // Préparer la requête pour récupérer les commandes de l'utilisateur
+
     $stmt = $pdo->prepare("SELECT * FROM commande WHERE id_utilisateur = ?");
     $stmt->execute([$user_id]);
-
-    // Vérifier si des commandes ont été récupérées
     $commandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (Exception $e) {
@@ -25,36 +19,27 @@ try {
     header("Location: index.php");
     exit();
 }
-
-// Si une erreur survient lors de l'annulation de la commande
 if (isset($_SESSION['error'])) {
     echo "<div class='alert alert-danger'>" . $_SESSION['error'] . "</div>";
     unset($_SESSION['error']);
 }
 
-// Si une commande a été annulée avec succès
 if (isset($_SESSION['success'])) {
     echo "<div class='alert alert-success'>" . $_SESSION['success'] . "</div>";
     unset($_SESSION['success']);
 }
-
-// Traitement de l'annulation de la commande
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) {
     $commande_id = $_POST['commande_id'];
     $raison = $_POST['raison'];
 
     try {
-        // Vérifier si la commande existe et si elle est en attente
         $stmt = $pdo->prepare("SELECT * FROM commande WHERE id_commande = ? AND id_utilisateur = ? AND statut = 'en_attente'");
         $stmt->execute([$commande_id, $user_id]);
         $commande = $stmt->fetch();
 
         if ($commande) {
-            // Mise à jour du statut de la commande à "annulée"
             $stmt = $pdo->prepare("UPDATE commande SET statut = 'annulee' WHERE id_commande = ?");
             $stmt->execute([$commande_id]);
-
-            // Enregistrement dans l'historique des annulations
             $stmt = $pdo->prepare("INSERT INTO historique_commandes_annulees (id_commande, date_annulation, raison) VALUES (?, NOW(), ?)");
             $stmt->execute([$commande_id, $raison]);
 
@@ -65,8 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
     } catch (Exception $e) {
         $_SESSION['error'] = "Erreur lors de l'annulation de la commande : " . $e->getMessage();
     }
-
-    // Redirection après l'annulation
     header("Location: history.php");
     exit();
 }
@@ -88,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
         .statut-en_attente { background: #fff3cd; color: #856404; }
         .statut-validee { background: #d4edda; color: #155724; }
         .statut-annulee { background: #f8d7da; color: #721c24; }
-        .modal { /* Styles pour le modal */ }
+       
     </style>
 </head>
 <body>
@@ -96,13 +79,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
 
     <div class="container">
         <h1>Historique des Commandes</h1>
-
-        <!-- Formulaire de filtrage -->
         <form method="GET" class="filter-form">
-            <!-- ... garder les mêmes champs de filtre ... -->
-        </form>
+           
+        <form method="GET">
+            <label for="statut">Statut :</label>
+            <select name="statut" id="statut">
+                <option value="">Tous</option>
+                <option value="en_attente" <?= $statut == 'en_attente' ? 'selected' : '' ?>>En attente</option>
+                <option value="validee" <?= $statut == 'validee' ? 'selected' : '' ?>>Validée</option>
+                <option value="annulee" <?= $statut == 'annulee' ? 'selected' : '' ?>>Annulée</option>
+            </select>
 
-        <!-- Tableau des commandes -->
+            <label for="date_debut">Date de début :</label>
+            <input type="date" name="date_debut" value="<?= $date_debut ?>">
+
+            <label for="date_fin">Date de fin :</label>
+            <input type="date" name="date_fin" value="<?= $date_fin ?>">
+
+            <button type="submit">Filtrer</button>
+        </form>
         <table class="commandes-table">
             <thead>
                 <tr>
@@ -150,48 +145,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
     </div>
 
    <!-- Modal d'annulation -->
-<div id="cancelModal" class="modal">
-    <div class="modal-content">
-        <h3>Annuler une commande</h3>
-        <form method="POST">
-            <input type="hidden" name="commande_id" id="commandeId">
-            <div class="form-group">
-                <label for="raison">Raison de l'annulation :</label>
-                <textarea 
-                    name="raison" 
-                    id="raison" 
-                    class="form-control"
-                    rows="3"
-                    required
-                ></textarea>
-            </div>
-            <div class="modal-actions">
-                <button type="submit" name="annuler_commande" class="btn btn-danger">
-                    Confirmer l'annulation
-                </button>
-                <button 
-                    type="button" 
-                    class="btn btn-secondary"
-                    onclick="closeCancelModal()"
-                >
-                    Fermer
-                </button>
-            </div>
-        </form>
+   <div id="cancelModal">
+        <div class="modal-content">
+            <p>Voulez-vous vraiment annuler cette commande ?</p>
+            <form method="POST" action="annuler_commande.php" id="cancelForm">
+                <input type="hidden" name="id_commande" id="modalCommandeId">
+                <button type="submit" class="confirm">Oui, annuler</button>
+                <button type="button" onclick="closeModal()" class="cancel">Annuler</button>
+            </form>
+        </div>
     </div>
-</div>
-
 
     <script>
-        function openCancelModal(commandeId) {
-            document.getElementById('commandeId').value = commandeId;
-            document.getElementById('cancelModal').style.display = 'block';
+        function openModal(id) {
+            document.getElementById('modalCommandeId').value = id;
+            document.getElementById('cancelModal').style.display = 'flex';
         }
 
-        function closeCancelModal() {
+        function closeModal() {
             document.getElementById('cancelModal').style.display = 'none';
         }
     </script>
+
     <?php include('includes/footer.php'); ?>
 </body>
 </html>

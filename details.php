@@ -27,10 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_produit'])) {
 
     $productId = (int) $_POST['id_produit'];
     $quantity = (int) $_POST['quantite'];
-
-    // Ajouter ou mettre à jour le produit dans le panier
     if (isset($_SESSION['cart'][$productId])) {
-        // Si le produit est déjà dans le panier, on ajoute la quantité demandée
         $_SESSION['cart'][$productId]['quantity'] += $quantity;
     } else {
         $_SESSION['cart'][$productId] = [

@@ -3,11 +3,11 @@ session_start();
 include('includes/db.php'); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = trim($_POST['nom']);
-    $prenom = trim($_POST['prenom']);
-    $email = trim($_POST['email']);
-    $mot_de_passe = $_POST['mot_de_passe'];
-    $confirm = $_POST['confirm_mot_de_passe']; 
+    $nom = isset($_POST['nom']) ? trim($_POST['nom']) : '';
+    $prenom = isset($_POST['prenom']) ? trim($_POST['prenom']) : '';
+    $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+    $mot_de_passe = isset($_POST['mot_de_passe']) ? $_POST['mot_de_passe'] : '';
+    $confirm = isset($_POST['confirm_mot_de_passe']) ? $_POST['confirm_mot_de_passe'] : ''; 
 
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM utilisateur WHERE email = :email");
     $stmt->execute(['email' => $email]);
@@ -31,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($mot_de_passe !== $confirm) {
         $_SESSION['error'] = "Les mots de passe ne correspondent pas.";
     } else {
-        
         $hash = password_hash($mot_de_passe, PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role) VALUES (:nom, :prenom, :email, :mot_de_passe, 'client')");
         $stmt->execute([
@@ -41,18 +40,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'mot_de_passe' => $hash
         ]);
 
-        $_SESSION['success'] = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
-        $_SESSION['user_id'] = $user['id_utilisateur'];
-        $_SESSION['username'] = $user['nom'] . ' ' . $user['prenom'];
-        $_SESSION['role'] = $user['role'];
-        header("Location: index.php");
-        exit();
+        $stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            $_SESSION['user_id'] = $user['id_utilisateur'];
+            $_SESSION['username'] = $user['nom'] . ' ' . $user['prenom'];
+            $_SESSION['role'] = $user['role'];
+
+            header("Location: index.php");
+            exit();
+        } else {
+            $_SESSION['error'] = "Erreur lors de l'inscription.";
+            header("Location: register.php");
+            exit();
+        }
     }
 
     header("Location: register.php");
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
