@@ -33,28 +33,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
     $raison = $_POST['raison'];
 
     try {
+        // Vérifier que la commande est bien annulable
         $stmt = $pdo->prepare("SELECT * FROM commande WHERE id_commande = ? AND id_utilisateur = ? AND statut = 'en_attente'");
         $stmt->execute([$commande_id, $user_id]);
         $commande = $stmt->fetch();
 
         if ($commande) {
+            // Mettre à jour le statut dans la table commande
             $stmt = $pdo->prepare("UPDATE commande SET statut = 'annulee' WHERE id_commande = ?");
             $stmt->execute([$commande_id]);
-            $stmt = $pdo->prepare("INSERT INTO historique_commandes_annulees (id_commande, date_annulation, raison) VALUES (?, NOW(), ?)");
+
+            // Historique d'annulation
+            $stmt = $pdo->prepare("INSERT INTO historique_annulations (id_commande, raison, date_annulation) VALUES (?, ?, NOW())");
             $stmt->execute([$commande_id, $raison]);
 
-            $_SESSION['success'] = "La commande a été annulée avec succès.";
+            $_SESSION['success'] = "Commande annulée avec succès.";
         } else {
-            $_SESSION['error'] = "Cette commande ne peut pas être annulée.";
+            $_SESSION['error'] = "Impossible d'annuler cette commande.";
         }
-    } catch (Exception $e) {
-        $_SESSION['error'] = "Erreur lors de l'annulation de la commande : " . $e->getMessage();
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Erreur : " . $e->getMessage();
     }
+    
     header("Location: history.php");
     exit();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -71,7 +75,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
         .statut-en_attente { background: #fff3cd; color: #856404; }
         .statut-validee { background: #d4edda; color: #155724; }
         .statut-annulee { background: #f8d7da; color: #721c24; }
-       
+        #cancelModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #cancelModal .modal-content {
+            background-color: #fff7f0;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        #cancelModal .modal-content button {
+            margin: 10px 5px 0;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #cancelModal .modal-content .confirm {
+            background-color: #b22222;
+            color: white;
+        }
+
+        #cancelModal .modal-content .cancel {
+            background-color: #888;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -128,16 +167,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
                                 Détails
                             </button>
                             </form>
-                            <?php if ($commande['statut'] === 'en_attente'): ?>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-danger"
-                                    onclick="openCancelModal(<?= $commande['id_commande'] ?>)"
-                                >
-                                    Annuler
-                                </button>
-                            <?php endif; ?>
-                        </td>
+    <?php if ($commande['statut'] === 'en_attente'): ?>
+        <button 
+            type="button" 
+            class="btn btn-danger"
+            onclick="openModal(
+                <?= $commande['id_commande'] ?>, 
+                '<?= htmlspecialchars($commande['date_commande'], ENT_QUOTES) ?>')">
+            Annuler
+        </button>
+    <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -157,14 +196,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
     </div>
 
     <script>
-        function openModal(id) {
-            document.getElementById('modalCommandeId').value = id;
-            document.getElementById('cancelModal').style.display = 'flex';
-        }
+      function openModal(id, date) {
+    const MAX_HOURS = 24; // Délai maximum d'annulation en heures
+    const commandeDate = new Date(date);
+    const now = new Date();
+    const diffHours = Math.abs(now - commandeDate) / 36e5;
 
-        function closeModal() {
-            document.getElementById('cancelModal').style.display = 'none';
-        }
+    if (diffHours > MAX_HOURS) {
+        alert("Annulation impossible après 24 heures !");
+        return;
+    }
+
+    document.getElementById('modalCommandeId').value = id;
+    document.getElementById('cancelModal').style.display = 'flex';
+}
     </script>
 
     <?php include('includes/footer.php'); ?>

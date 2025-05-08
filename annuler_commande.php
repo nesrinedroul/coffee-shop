@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
 $commande_id = (int)$_POST['commande_id'];
 
 try {
-    // Annuler la commande si elle appartient à l'utilisateur et n'est pas déjà annulée
     $stmt = $pdo->prepare("
         UPDATE commande 
         SET statut = 'annulee' 

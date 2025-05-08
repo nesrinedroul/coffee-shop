@@ -15,6 +15,7 @@ if (session_status() === PHP_SESSION_NONE) {
         <?php else: ?>
             <a href="login.php">Connexion</a>
             <a href="register.php">Créer un compte</a>
+            
         <?php endif; ?>
     </nav>
 </header>

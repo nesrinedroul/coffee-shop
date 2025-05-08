@@ -217,3 +217,12 @@ header {
   height: 90%;
   margin: 10px 10px;
 }
+footer {
+  width: 100%;
+  
+  bottom: 0;
+  background-color: #5c3d2e;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
