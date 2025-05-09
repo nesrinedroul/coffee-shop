@@ -4,40 +4,86 @@ require '../includes/db.php';
 
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Accès non autorisé']);
+// Vérification de l'authentification et des droits
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Non authentifié']);
     exit();
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+if ($_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Permissions insuffisantes']);
+    exit();
+}
 
-// Validation basique
+// Récupération des données
+$data = json_decode(file_get_contents('php://input'), true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Données JSON invalides']);
+    exit();
+}
+
+// Validation
 if (!isset($data['new_status'], $data['order_id'])) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Données manquantes']);
+    echo json_encode(['success' => false, 'message' => 'Paramètres manquants']);
     exit();
 }
 
-$statuts_valides = ['en_attente', 'validee', 'annulee'];
+// Liste des statuts autorisés (vérifiez que ceux-ci correspondent à votre base)
+$statuts_valides = ['en_attente', 'validee', 'annulee', 'en_cours', 'livree']; // Ajoutez tous les statuts possibles
 if (!in_array($data['new_status'], $statuts_valides)) {
     http_response_code(422);
-    echo json_encode(['success' => false, 'message' => 'Statut invalide']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Statut invalide',
+        'statut_reçu' => $data['new_status'],
+        'statuts_valides' => $statuts_valides
+    ]);
     exit();
 }
 
 try {
-    $stmt = $pdo->prepare("UPDATE commande SET statut = ? WHERE id_commande = ?");
-    $stmt->execute([$data['new_status'], $data['order_id']]);
+    // Vérification que la commande existe
+    $checkStmt = $pdo->prepare("SELECT id_commande FROM commande WHERE id_commande = ?");
+    $checkStmt->execute([$data['order_id']]);
+    
+    if ($checkStmt->rowCount() === 0) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Commande introuvable']);
+        exit();
+    }
 
-    if ($stmt->rowCount() > 0) {
-        echo json_encode(['success' => true, 'message' => 'Statut mis à jour']);
+    // Mise à jour
+    $updateStmt = $pdo->prepare("UPDATE commande SET statut = ? WHERE id_commande = ?");
+    $updateStmt->execute([$data['new_status'], $data['order_id']]);
+
+    // Journalisation pour débogage
+    error_log("Tentative de mise à jour commande #{$data['order_id']} vers {$data['new_status']}");
+
+    if ($updateStmt->rowCount() > 0) {
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Statut mis à jour',
+            'order_id' => $data['order_id'],
+            'new_status' => $data['new_status']
+        ]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Aucune mise à jour effectuée']);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Aucune modification effectuée',
+            'possible_reason' => 'Le statut était déjà à cette valeur'
+        ]);
     }
 
 } catch (PDOException $e) {
+    error_log("Erreur DB: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Erreur base de données']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Erreur de base de données',
+        'error_details' => $e->getMessage()
+    ]);
 }
-?>

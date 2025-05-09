@@ -203,7 +203,7 @@ th {
 <body>
     <?php include('admin_header.php'); ?>
     
-    <div class="main-content main main-container">
+    <div class="main-container">
         <div class="header">
             <h1>Tableau de Bord Administrateur</h1>
             <div class="user-info">

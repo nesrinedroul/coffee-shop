@@ -66,6 +66,54 @@ $lowStock = $pdo->query("
         .main-content {
             margin-top: 20px;
         }
+        
+        /* Custom confirmation dialog */
+        .confirmation-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .confirmation-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .confirmation-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .confirm-btn {
+            background-color: #d33;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .cancel-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -82,7 +130,19 @@ $lowStock = $pdo->query("
     <?php endforeach; ?>
 </div>
 
-<div class="main-container main-content main">
+<!-- Confirmation Dialog -->
+<div class="confirmation-dialog" id="confirmationDialog">
+    <div class="confirmation-box">
+        <h3>Confirmer la suppression</h3>
+        <p>Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.</p>
+        <div class="confirmation-buttons">
+            <button class="cancel-btn" id="cancelDelete">Annuler</button>
+            <button class="confirm-btn" id="confirmDelete">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+<div class=" main-container">
     <div class="header">
         <h1>Produits</h1>
         <a href="add_produit.php" class="btn">+ Ajouter Produit</a>
@@ -111,7 +171,7 @@ $lowStock = $pdo->query("
 
                 <div class="actions">
                     <a href="edit_produit.php?id=<?php echo $product['id_produit']; ?>" class="edit-btn">Modifier</a>
-                    <a href="delete_produit.php?id=<?php echo $product['id_produit']; ?>" class="delete-btn">Supprimer</a>
+                    <a href="#" class="delete-btn" onclick="showDeleteConfirmation(<?php echo $product['id_produit']; ?>)">Supprimer</a>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -119,6 +179,29 @@ $lowStock = $pdo->query("
 </div>
 
 <script>
+    // Delete confirmation system
+    let currentDeleteUrl = '';
+    
+    function showDeleteConfirmation(productId) {
+        currentDeleteUrl = 'delete_produit.php?id=' + productId;
+        document.getElementById('confirmationDialog').style.display = 'flex';
+    }
+    
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+        window.location.href = currentDeleteUrl;
+    });
+    
+    document.getElementById('cancelDelete').addEventListener('click', function() {
+        document.getElementById('confirmationDialog').style.display = 'none';
+    });
+    
+    // Close the dialog when clicking outside
+    document.getElementById('confirmationDialog').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+
     // Close notification when X is clicked
     document.querySelectorAll('.close-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {

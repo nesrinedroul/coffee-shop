@@ -40,349 +40,421 @@ function formatStatut($statut) {
     return $statuts[$statut] ?? $statut;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Commandes Admin</title>
+    <title>Tableau de Bord - Commandes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../assets/css/admin.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --white: #ffffff;
+            --border-radius: 0.375rem;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
         }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb;
-            color: #333;
-            padding: 30px;
+            background-color: #f5f7fb;
+            color: #1a1a1a;
+            line-height: 1.6;
         }
 
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #1f2937;
+        .admin-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
         }
 
-        .table-wrapper {
-            overflow-x: auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-            padding: 24px;
+        .main-content {
+            padding: 2rem;
+            background-color: var(--white);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-
-        thead {
-            background-color: #111827;
-            color: white;
-        }
-
-        th, td {
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 0.95rem;
-        }
-
-        th {
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f3f4f6;
-        }
-
-        tr:hover {
-            background-color: #e5e7eb;
-            transition: 0.2s;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            text-decoration: none;
-            padding: 10px 20px;
-            background-color: #2563eb;
-            color: white;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: 0.3s ease;
-        }
-
-        .back-link:hover {
-            background-color: #1e40af;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 30px 0;
-            color: #9ca3af;
-        }
-
-        @media (max-width: 768px) {
-            th, td {
-                font-size: 0.85rem;
-                padding: 10px;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-        }
-     * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f9fafb;
-            color: #333;
-            padding: 30px;
-        }
-
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #1f2937;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-            padding: 24px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-
-        thead {
-            background-color: #111827;
-            color: white;
-        }
-
-        th, td {
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 0.95rem;
-        }
-
-        th {
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f3f4f6;
-        }
-
-        tr:hover {
-            background-color: #e5e7eb;
-            transition: 0.2s;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            text-decoration: none;
-            padding: 10px 20px;
-            background-color: #2563eb;
-            color: white;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: 0.3s ease;
-        }
-
-        .back-link:hover {
-            background-color: #1e40af;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 30px 0;
-            color: #9ca3af;
-        }
-
-        @media (max-width: 768px) {
-            th, td {
-                font-size: 0.85rem;
-                padding: 10px;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-        }.header-tools {
+        .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .sortable {
-            cursor: pointer;
-            transition: 0.3s;
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
         }
 
-        .sortable:hover {
-            background: #f3f4f6;
+        /* Filtres améliorés */
+        .filter-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.25rem;
+            margin-bottom: 2rem;
         }
 
-        .pagination {
-            margin-top: 20px;
-            display: flex;
-            gap: 5px;
-            justify-content: center;
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
         }
 
-        .pagination a {
-            padding: 8px 12px;
-            border-radius: 6px;
-            background: #f3f4f6;
-            text-decoration: none;
+        .form-group {
+            margin-bottom: 0;
         }
 
-        .pagination a.active {
-            background: #3b82f6;
-            color: white;
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray);
+            font-size: 0.875rem;
         }
 
-        .export-btn {
-            background: #10b981;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
+        input, select {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
         }
 
-        .statut-selector {
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        /* Tableau amélioré */
+        .data-table {
+            width: 100%;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .data-table thead {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .data-table th {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 0.875rem;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        /* Badges de statut */
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-pending {
+            background-color: #fff3bf;
+            color: #e67700;
+        }
+
+        .status-approved {
+            background-color: #d3f9d8;
+            color: #2b8a3e;
+        }
+
+        .status-cancelled {
+            background-color: #ffe3e3;
+            color: #c92a2a;
+        }
+
+        /* Actions */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: transparent;
+            color: var(--gray);
+            transition: var(--transition);
+            border: none;
             cursor: pointer;
         }
 
+        .action-btn:hover {
+            background-color: #f1f5f9;
+            color: var(--primary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+
+        .page-item {
+            list-style: none;
+        }
+
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius);
+            background-color: var(--white);
+            color: var(--gray);
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+        }
+
+        .page-link:hover, .page-link.active {
+            background-color: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 <body>
-<?php include('admin_header.php'); ?>
-
-<div class="main-content">
-    <div class="header-tools">
-        <h1>Gestion des commandes</h1>
-        <a href="export.php?<?= http_build_query($_GET) ?>" class="export-btn">
-            <i class='bx bx-download'></i> Exporter CSV
-        </a>
-    </div>
-
-    <form method="GET" class="filters">
-        <div class="filter-grid">
-            <!-- À compléter avec des champs input/select si souhaité -->
-            <input type="text" name="mot_cle" placeholder="Recherche..." value="<?= htmlspecialchars($_GET['mot_cle'] ?? '') ?>">
-            <select name="statut">
-                <option value="">Tous les statuts</option>
-                <?php foreach ($statuts_disponibles as $s): ?>
-                    <option value="<?= $s ?>" <?= $s === $statut ? 'selected' : '' ?>>
-                        <?= formatStatut($s) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <input type="date" name="date_debut" value="<?= htmlspecialchars($date_debut ?? '') ?>">
-            <input type="date" name="date_fin" value="<?= htmlspecialchars($date_fin ?? '') ?>">
-        </div>
-        <button type="submit" class="btn-filter">Appliquer les filtres</button>
-    </form>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Date</th>
-                    <th>Client</th>
-                    <th>Total</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!empty($commandes)): ?>
-                    <?php foreach ($commandes as $commande): ?>
+    <div class="admin-container">
+        <?php include('admin_header.php'); ?>
+        
+        <div class="main-container">
+            <div class="page-header">
+                <h1 class="page-title">Gestion des Commandes</h1>
+                <div class="actions">
+                <a href="export.php" class="action-btn" title="Imprimer">
+                                                <i class='bx bx-printer'></i> imprimer
+                                            </a>
+                </div>
+            </div>
+            
+            <div class="filter-card">
+                <form method="GET" class="filter-form">
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label for="search">Recherche</label>
+                            <input type="text" id="search" name="mot_cle" placeholder="ID, client..." value="<?= htmlspecialchars($mot_cle ?? '') ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status">Statut</label>
+                            <select id="status" name="statut">
+                                <option value="">Tous les statuts</option>
+                                <?php foreach ($statuts_disponibles as $s): ?>
+                                    <option value="<?= $s ?>" <?= $s === $statut ? 'selected' : '' ?>>
+                                        <?= formatStatut($s) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="date_start">Date début</label>
+                            <input type="date" id="date_start" name="date_debut" value="<?= htmlspecialchars($date_debut ?? '') ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="date_end">Date fin</label>
+                            <input type="date" id="date_end" name="date_fin" value="<?= htmlspecialchars($date_fin ?? '') ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" style="height: 42px;">
+                                <i class='bx bx-filter-alt'></i> Filtrer
+                            </button>
+                            <a href="?" class="btn btn-outline" style="height: 42px; margin-left: 0.5rem;">
+                                Réinitialiser
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
                         <tr>
-                            <td><?= $commande['id_commande'] ?></td>
-                            <td><?= date('d/m/Y H:i', strtotime($commande['date_commande'])) ?></td>
-                            <td><?= htmlspecialchars($commande['prenom']) . ' ' . htmlspecialchars($commande['nom']) ?></td>
-                            <td><?= number_format($commande['total'], 2) ?> DA</td>
-                            <td>
-                                <select class="statut-selector"
-                                        data-order="<?= $commande['id_commande'] ?>"
-                                        data-current="<?= $commande['statut'] ?>">
-                                    <?php foreach ($statuts_disponibles as $s): ?>
-                                        <option value="<?= $s ?>" <?= $s === $commande['statut'] ? 'selected' : '' ?>>
-                                            <?= formatStatut($s) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                            <td>
-                                <a href="../details.php?id=<?= $commande['id_commande'] ?>" class="back-link">Détails</a>
-                            </td>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="6" class="empty-message">Aucune commande trouvée pour les critères sélectionnés.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($commandes)): ?>
+                            <?php foreach ($commandes as $commande): ?>
+                                <tr>
+                                    <td>#<?= $commande['id_commande'] ?></td>
+                                    <td><?= date('d/m/Y H:i', strtotime($commande['date_commande'])) ?></td>
+                                    <td><?= htmlspecialchars($commande['prenom']) . ' ' . htmlspecialchars($commande['nom']) ?></td>
+                                    <td><?= number_format($commande['total'], 2) ?> DA</td>
+                                    <td>
+                                        <select class="status-select"
+                                                data-order="<?= $commande['id_commande'] ?>"
+                                                data-current="<?= $commande['statut'] ?>"
+                                                onchange="updateOrderStatus(this)">
+                                            <?php foreach ($statuts_disponibles as $s): ?>
+                                                <option value="<?= $s ?>" <?= $s === $commande['statut'] ? 'selected' : '' ?>>
+                                                    <?= formatStatut($s) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="commande_details.php?id=<?= $commande['id_commande'] ?>" class="action-btn" title="Voir détails">
+                                                <i class='bx bx-show'></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-gray-500">
+                                    Aucune commande trouvée pour les critères sélectionnés.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <?php for ($i = 1; $i <= $page + 1; $i++): ?>
+                    <a href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>"
+                       class="page-link <?= $i == $page ? 'active' : '' ?>">
+                       <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+            </div>
+        </div>
     </div>
 
-    <!-- Pagination simplifiée -->
-    <div class="pagination">
-        <?php for ($i = 1; $i <= $page + 1; $i++): ?>
-            <a href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>"
-               class="<?= $i == $page ? 'active' : '' ?>">
-               <?= $i ?>
-            </a>
-        <?php endfor; ?>
-    </div>
-</div>
-
-<script>
-document.querySelectorAll('.statut-selector').forEach(selector => {
-    selector.addEventListener('change', function () {
-        const orderId = this.dataset.order;
-        const currentStatus = this.dataset.current;
-        const newStatus = this.value;
-        const selectElement = this;
-
-        if (newStatus === currentStatus) return;
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    function updateOrderStatus(selectElement) {
+        const orderId = selectElement.dataset.order;
+        const currentStatus = selectElement.dataset.current;
+        const newStatus = selectElement.value;
+        
+        if (newStatus === currentStatus) {
+            selectElement.value = currentStatus;
+            return;
+        }
+        
         Swal.fire({
-            title: "Modifier le statut ?",
-            text: `Commande #${orderId} - Nouveau statut : ${newStatus}`,
-            icon: "question",
+            title: 'Confirmer la modification',
+            text: `Voulez-vous vraiment changer le statut de la commande #${orderId} en "${newStatus}"?`,
+            icon: 'question',
             showCancelButton: true,
-            confirmButtonText: "Confirmer",
-            cancelButtonText: "Annuler"
-        }).then(result => {
+            confirmButtonText: 'Confirmer',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#4361ee',
+        }).then((result) => {
             if (result.isConfirmed) {
-                fetch('update_statu.php', {
+                fetch('update_status.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -393,25 +465,31 @@ document.querySelectorAll('.statut-selector').forEach(selector => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire("Succès", "Le statut a été mis à jour.", "success");
-                        selectElement.dataset.current = newStatus; // Mettre à jour la valeur actuelle
+                        Swal.fire({
+                            title: 'Succès!',
+                            text: 'Le statut a été mis à jour.',
+                            icon: 'success',
+                            confirmButtonColor: '#4361ee',
+                        });
+                        selectElement.dataset.current = newStatus;
                     } else {
-                        Swal.fire("Erreur", data.message || "Échec de la mise à jour.", "error");
-                        selectElement.value = currentStatus;
+                        throw new Error(data.message || 'Erreur lors de la mise à jour');
                     }
                 })
-                .catch(() => {
-                    Swal.fire("Erreur", "Une erreur est survenue.", "error");
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Erreur!',
+                        text: error.message,
+                        icon: 'error',
+                        confirmButtonColor: '#4361ee',
+                    });
                     selectElement.value = currentStatus;
                 });
             } else {
                 selectElement.value = currentStatus;
             }
         });
-    });
-});
-</script>
-
-</script>
+    }
+    </script>
 </body>
 </html>

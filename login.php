@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($mot_de_passe, $user['mot_de_passe'])) {
-        // Connexion réussie
         $_SESSION['user_id'] = $user['id_utilisateur'];
         $_SESSION['username'] = $user['nom'] . ' ' . $user['prenom'];
         $_SESSION['role'] = $user['role'];
@@ -35,8 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -45,11 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Connexion</title>
     <link rel="stylesheet" href="assets/css/login.css">
-
 </head>
 <body>
     <div class="split-container">
-        <!-- Login Form Section -->
         <div class="left-section">
             <h2>Connexion</h2>
             <?php if (isset($_SESSION['error'])): ?>
@@ -67,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="alternate-action">Mot de passe oublié ? <a href="#">Réinitialiser</a></p>
         </div>
 
-        <!-- Welcome Section -->
         <div class="right-section">
             <div class="welcome-content">
                 <h2>Bienvenue !</h2>
