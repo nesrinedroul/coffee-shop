@@ -4,7 +4,6 @@ include('includes/db.php');
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $category = isset($_GET['category']) ? trim($_GET['category']) : '';
-
 $stmtCat = $pdo->query("SELECT DISTINCT categorie FROM produit");
 $categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
 

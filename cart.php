@@ -1,15 +1,12 @@
 <?php
 session_start();
 require 'includes/db.php';
-
-// Gestion des erreurs
 $error = '';
 if (isset($_SESSION['error'])) {
     $error = '<div class="error-message">' . $_SESSION['error'] . '</div>';
     unset($_SESSION['error']);
 }
 
-// Gestion de la suppression d'article
 if (isset($_GET['remove'])) {
     $productId = (int)$_GET['remove'];
     if (isset($_SESSION['cart'][$productId])) {
@@ -20,7 +17,7 @@ if (isset($_GET['remove'])) {
     exit();
 }
 
-// Mise à jour de la quantité
+
 if (isset($_POST['update_quantity'])) {
     $productId = (int)$_POST['product_id'];
     $quantity = max(1, min(20, (int)$_POST['quantity'])); // Limite 1-20
@@ -33,12 +30,10 @@ if (isset($_POST['update_quantity'])) {
     exit();
 }
 
-// Récupération des détails du panier
 $totalPrice = 0;
 $cartItems = [];
 if (!empty($_SESSION['cart'])) {
-    // Récupération de tous les IDs de produits en une seule requête
-    $productIds = array_keys($_SESSION['cart']);
+$productIds = array_keys($_SESSION['cart']);
     $placeholders = rtrim(str_repeat('?,', count($productIds)), ',');
     
     $stmt = $pdo->prepare("SELECT * FROM produit WHERE id_produit IN ($placeholders)");

@@ -89,35 +89,7 @@
             height: 100vh;
             overflow: hidden;
         }
-        .sidebar {
-            width: 220px;
-            background: var(--primary-color);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-        .sidebar h2 {
-            font-size: 24px;
-            margin-bottom: 40px;
-            font-weight: 700;
-        }
-        .sidebar a {
-            color: #cbd5e1;
-            text-decoration: none;
-            margin-bottom: 20px;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-        .sidebar a:hover {
-            color: #ffffff;
-        }
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+       
         .header {
             height: 70px;
             background: white;
@@ -134,7 +106,7 @@
         .header .btn {
             background: var(--primary-color);
             color: white;
-            padding: 10px 20px;
+            padding: 20px 20px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;

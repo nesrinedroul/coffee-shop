@@ -2,7 +2,7 @@
 session_start();
 require 'includes/db.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['user_id'])) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
