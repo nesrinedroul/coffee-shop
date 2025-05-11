@@ -62,11 +62,7 @@ $lowStock = $pdo->query("
             to { transform: translateX(0); opacity: 1; }
         }
         
-        /* Main content spacing */
-        .main-content {
-            margin-top: 20px;
-        }
-        
+      
         /* Custom confirmation dialog */
         .confirmation-dialog {
             display: none;
@@ -130,7 +126,6 @@ $lowStock = $pdo->query("
     <?php endforeach; ?>
 </div>
 
-<!-- Confirmation Dialog -->
 <div class="confirmation-dialog" id="confirmationDialog">
     <div class="confirmation-box">
         <h3>Confirmer la suppression</h3>
@@ -142,7 +137,7 @@ $lowStock = $pdo->query("
     </div>
 </div>
 
-<div class=" main-container">
+<div class="main-content ">
     <div class="header">
         <h1>Produits</h1>
         <a href="add_produit.php" class="btn">+ Ajouter Produit</a>

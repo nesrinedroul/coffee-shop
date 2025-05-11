@@ -1,6 +1,6 @@
 
 body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             margin: 0;
             padding: 0;
@@ -11,26 +11,7 @@ body {
             background-color: #fefefe;
         }
 
-        header {
-            background: #451f04;
-            color: #fff;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-          }
-          
-          header h1 {
-            font-size: 1.8rem;
-            color: #ffe5b4;
-          }
-          
-          header nav a {
-            color: #fff;
-            margin-left: 1rem;
-            text-decoration: none;
-          }
+     
         h2 {
             font-size: 24px;
             margin-bottom: 20px;
@@ -103,12 +84,47 @@ h1 {
             cursor: pointer;
         }
         
-footer {
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    background-color: #5c3d2e;
-    color: white;
-    padding: 20px;
-    text-align: center;
-}
+ .statut-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+        }
+        .statut-en_attente { background: #fff3cd; color: #856404; }
+        .statut-validee { background: #d4edda; color: #155724; }
+        .statut-annulee { background: #f8d7da; color: #721c24; }
+        #cancelModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #cancelModal .modal-content {
+            background-color: #fff7f0;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        #cancelModal .modal-content button {
+            margin: 10px 5px 0;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #cancelModal .modal-content .confirm {
+            background-color: #b22222;
+            color: white;
+        }
+
+        #cancelModal .modal-content .cancel {
+            background-color: #888;
+            color: white;
+        }
