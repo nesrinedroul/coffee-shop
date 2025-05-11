@@ -51,9 +51,6 @@ function formatStatut($statut) {
     <link rel="stylesheet" href="../assets/css/admin.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
             --success: #4cc9f0;
             --danger: #f72585;
             --warning: #f8961e;
@@ -72,17 +69,6 @@ function formatStatut($statut) {
             background-color: #f5f7fb;
             color: #1a1a1a;
             line-height: 1.6;
-        }
-
-        .admin-container {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            min-height: 100vh;
-        }
-
-        .main-content {
-            padding: 2rem;
-            background-color: var(--white);
         }
 
         .page-header {
@@ -116,32 +102,6 @@ function formatStatut($statut) {
             align-items: end;
         }
 
-        .form-group {
-            margin-bottom: 0;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--gray);
-            font-size: 0.875rem;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 0.625rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: var(--border-radius);
-            font-size: 0.875rem;
-            transition: var(--transition);
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
 
         .btn {
             display: inline-flex;
@@ -292,7 +252,7 @@ function formatStatut($statut) {
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .admin-container {
+            .main-content {
                 grid-template-columns: 1fr;
             }
             
@@ -314,15 +274,15 @@ function formatStatut($statut) {
     </style>
 </head>
 <body>
-    <div class="admin-container">
+    <div class="main">
         <?php include('admin_header.php'); ?>
         
-        <div class="main-container">
+        <div class="main-content main">
             <div class="page-header">
                 <h1 class="page-title">Gestion des Commandes</h1>
                 <div class="actions">
                 <a href="export.php" class="action-btn" title="Imprimer">
-                                                <i class='bx bx-printer'></i> imprimer
+                                                <i class='bx bx-printer'></i>importer csv
                                             </a>
                 </div>
             </div>

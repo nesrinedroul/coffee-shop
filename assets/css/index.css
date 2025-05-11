@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
   }
   
 body {
@@ -10,25 +10,7 @@ body {
     color: #333;
     line-height: 1.6;
   }
-header {
-    background: #451f04;
-    color: #fff;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-  
-  header h1 {
-    font-size: 1.8rem;
-    color: #ffe5b4;
-  }
-  
-  header nav a {
-    color: #fff;
-    margin-left: 1rem;
-    text-decoration: none;
-  }
+
   .hero {
     background-color: #2e1503;
     padding: 80px 20px;
@@ -216,13 +198,4 @@ header {
   justify-content: flex-start;
   height: 90%;
   margin: 10px 10px;
-}
-footer {
-  width: 100%;
-  
-  bottom: 0;
-  background-color: #5c3d2e;
-  color: white;
-  padding: 20px;
-  text-align: center;
 }

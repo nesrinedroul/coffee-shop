@@ -43,8 +43,6 @@ include('../includes/db.php');
             display: flex;
             min-height: 100vh;
         }
-
-        /* Sidebar amélioré */
         .sidebar {
             width: 280px;
             height: 100vh;
@@ -59,7 +57,6 @@ include('../includes/db.php');
             z-index: 100;
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
-
         .sidebar-header {
             display: flex;
             align-items: center;
@@ -67,7 +64,6 @@ include('../includes/db.php');
             padding-bottom: 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .sidebar-logo {
             font-size: 1.5rem;
             font-weight: 700;
@@ -123,8 +119,8 @@ include('../includes/db.php');
         }
 
         /* Contenu principal */
-        .main-container {
-            margin-left: 280px;
+        .main-content {
+            margin-left: 290px;
             width: calc(100% - 280px);
             min-height: 100vh;
             display: flex;
@@ -206,8 +202,6 @@ include('../includes/db.php');
             background-color: white;
             color: var(--primary);
         }
-
-      
 
         /* Version mobile */
         @media (max-width: 1024px) {

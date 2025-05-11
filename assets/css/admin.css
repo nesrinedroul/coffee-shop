@@ -14,24 +14,6 @@ body {
 }
 
 
-.main-content {
-    margin-left: 220px;
-    width: calc(100% - 220px);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.header {
-    height: 70px;
-    background-color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    border-bottom: 1px solid var(--border-color);
-}
-
 .header h1 {
     font-size: 24px;
     color: var(--text-color);

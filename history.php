@@ -65,53 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
 <head>
     <meta charset="UTF-8">
     <title>Historique des Commandes</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <style>
-        .statut-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 1rem;
-            font-size: 0.875rem;
-        }
-        .statut-en_attente { background: #fff3cd; color: #856404; }
-        .statut-validee { background: #d4edda; color: #155724; }
-        .statut-annulee { background: #f8d7da; color: #721c24; }
-        #cancelModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        #cancelModal .modal-content {
-            background-color: #fff7f0;
-            padding: 30px;
-            border-radius: 10px;
-            width: 300px;
-            text-align: center;
-        }
-
-        #cancelModal .modal-content button {
-            margin: 10px 5px 0;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #cancelModal .modal-content .confirm {
-            background-color: #b22222;
-            color: white;
-        }
-
-        #cancelModal .modal-content .cancel {
-            background-color: #888;
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/history.css">
 </head>
 <body>
     <?php include('includes/header.php'); ?>

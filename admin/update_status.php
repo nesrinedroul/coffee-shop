@@ -3,21 +3,17 @@ session_start();
 require '../includes/db.php';
 
 header('Content-Type: application/json');
-
-// Vérification de l'authentification et des droits
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Non authentifié']);
     exit();
 }
-
 if ($_SESSION['role'] !== 'admin') {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Permissions insuffisantes']);
     exit();
 }
 
-// Récupération des données
 $data = json_decode(file_get_contents('php://input'), true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     http_response_code(400);
@@ -25,15 +21,14 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     exit();
 }
 
-// Validation
 if (!isset($data['new_status'], $data['order_id'])) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Paramètres manquants']);
     exit();
 }
 
-// Liste des statuts autorisés (vérifiez que ceux-ci correspondent à votre base)
-$statuts_valides = ['en_attente', 'validee', 'annulee', 'en_cours', 'livree']; // Ajoutez tous les statuts possibles
+// Liste des statuts autorisés 
+$statuts_valides = ['en_attente', 'validee', 'annulee', 'en_cours', 'livree']; 
 if (!in_array($data['new_status'], $statuts_valides)) {
     http_response_code(422);
     echo json_encode([
@@ -46,7 +41,7 @@ if (!in_array($data['new_status'], $statuts_valides)) {
 }
 
 try {
-    // Vérification que la commande existe
+    
     $checkStmt = $pdo->prepare("SELECT id_commande FROM commande WHERE id_commande = ?");
     $checkStmt->execute([$data['order_id']]);
     
@@ -56,11 +51,9 @@ try {
         exit();
     }
 
-    // Mise à jour
+  
     $updateStmt = $pdo->prepare("UPDATE commande SET statut = ? WHERE id_commande = ?");
     $updateStmt->execute([$data['new_status'], $data['order_id']]);
-
-    // Journalisation pour débogage
     error_log("Tentative de mise à jour commande #{$data['order_id']} vers {$data['new_status']}");
 
     if ($updateStmt->rowCount() > 0) {

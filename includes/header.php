@@ -3,6 +3,27 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 ?>
+<style>
+    header {
+    background: #451f04;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+  
+  header h1 {
+    font-size: 1.8rem;
+    color: #ffe5b4;
+  }
+  
+  header nav a {
+    color: #fff;
+    margin-left: 1rem;
+    text-decoration: none;
+  }
+</style>
 <header>
     <h1 class="logo">Coffee Ness</h1>
     <nav>

@@ -7,21 +7,40 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-if (!isset($_GET['id_commande'])) {
+if (!isset($_GET['id_commande']) || !is_numeric($_GET['id_commande'])) {
     echo "Commande introuvable.";
     exit();
 }
 
 $id_commande = (int) $_GET['id_commande'];
-$stmt = $pdo->prepare("CALL GetCommandeDetails(?)");
-$stmt->execute([$id_commande]);
-$details = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$stmt->nextRowset();
-$totalRow = $stmt->fetch(PDO::FETCH_ASSOC);
-$total_commande = $totalRow['total_global'] ?? 0;
-$stmt = $pdo->prepare("SELECT statut FROM commande WHERE id_commande = ?");
-$stmt->execute([$id_commande]);
-$orderStatus = $stmt->fetch(PDO::FETCH_ASSOC);
+
+try {
+    // Get order details
+    $stmt = $pdo->prepare("CALL GetCommandeDetails(?)");
+    $stmt->execute([$id_commande]);
+    $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Get the total from the second result set
+    $stmt->nextRowset();
+    $totalRow = $stmt->fetch(PDO::FETCH_ASSOC);
+    $total_commande = $totalRow['total_global'] ;
+    
+    // Get order status
+    $stmt = $pdo->prepare("SELECT statut FROM commande WHERE id_commande = ?");
+    $stmt->execute([$id_commande]);
+    $orderStatus = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+} catch (PDOException $e) {
+    die("Erreur de base de données: " . $e->getMessage());
+}
+
+// Debug function to see what's in the image path
+function debug_image_path($image) {
+    if (!empty($image)) {
+        return $image;
+    }
+    return ""; // Fallback image
+}
 ?>
 
 <!DOCTYPE html>
@@ -148,19 +167,27 @@ $orderStatus = $stmt->fetch(PDO::FETCH_ASSOC);
             <div class="order-items">
                 <?php foreach ($details as $item): ?>
                     <div class="order-item">
-                      <img src="<?= htmlspecialchars($produit['image']) ?>" alt="<?= htmlspecialchars($produit['nom']) ?>" class="product-image">
+                        <?php if (!empty($item['image'])): ?>
+                            <img src="<?= htmlspecialchars($item['image']) ?>" 
+                                 alt="<?= htmlspecialchars($item['produit']) ?>" 
+                                 class="product-image">
+                        <?php else: ?>
+                            <div class="product-image" style="background-color: #eee; display: flex; align-items: center; justify-content: center;">
+                                <span>Pas d'image</span>
+                            </div>
+                        <?php endif; ?>
                         <div class="item-details">
                             <h2><?= htmlspecialchars($item['produit']) ?></h2>
                             <p>Quantité: <?= htmlspecialchars($item['quantite']) ?></p>
-                            <p>Prix unitaire: <?= number_format($item['prix_unitaire'], 2) ?> DA</p>
-                            <p>Total: <?= number_format($item['total_par_produit'], 2) ?> DA</p>
+                            <p>Prix unitaire: <?= number_format((float)$item['prix_unitaire'], 2, ',', ' ') ?> dzd</p>
+                            <p>Total: <?= number_format((float)$item['total_par_produit'], 2, ',', ' ') ?> dzd</p>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
             <div class="order-summary">
                 <h3>Total de la commande:</h3>
-                <p><?= number_format($total_commande, 2) ?> DA</p>
+                <p><?= number_format((float)$total_commande, 2, ',', ' ') ?> €</p>
             </div>
         <?php else: ?>
             <p>Aucun produit trouvé pour cette commande.</p>
