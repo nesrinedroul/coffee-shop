@@ -119,7 +119,7 @@ include('../includes/db.php');
         }
 
         /* Contenu principal */
-        .main-content {
+        .main-content{
             margin-left: 290px;
             width: calc(100% - 280px);
             min-height: 100vh;
@@ -218,6 +218,7 @@ include('../includes/db.php');
             .main-content {
                 margin-left: 0;
                 width: 100%;
+                
             }
             
             .mobile-menu-btn {

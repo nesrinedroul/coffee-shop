@@ -33,16 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
     $raison = $_POST['raison'];
 
     try {
-        // Vérifier que la commande est bien annulable
         $stmt = $pdo->prepare("SELECT * FROM commande WHERE id_commande = ? AND id_utilisateur = ? AND statut = 'en_attente'");
         $stmt->execute([$commande_id, $user_id]);
         $commande = $stmt->fetch();
 
         if ($commande) {
-            // Mettre à jour le statut dans la table commande
+        
             $stmt = $pdo->prepare("UPDATE commande SET statut = 'annulee' WHERE id_commande = ?");
             $stmt->execute([$commande_id]);
-
             // Historique d'annulation
             $stmt = $pdo->prepare("INSERT INTO historique_annulations (id_commande, raison, date_annulation) VALUES (?, ?, NOW())");
             $stmt->execute([$commande_id, $raison]);
@@ -137,7 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['annuler_commande'])) 
         </table>
     </div>
 
-   <!-- Modal d'annulation -->
    <div id="cancelModal">
         <div class="modal-content">
             <p>Voulez-vous vraiment annuler cette commande ?</p>
