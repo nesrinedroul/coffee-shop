@@ -4,13 +4,18 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 ?>
 <style>
+  *{
+     font-family: 'Playfair Display', serif;
+  }
     header {
+       font-family: 'Playfair Display', serif;
     background: #451f04;
     color: #fff;
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+ 
 }
   
   header h1 {

@@ -1,5 +1,5 @@
 <footer style="
-  width: 100%;
+ 
   position:relative;
   bottom: 0;
   background-color: #5c3d2e;

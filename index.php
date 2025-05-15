@@ -7,7 +7,7 @@ $category = isset($_GET['category']) ? trim($_GET['category']) : '';
 $stmtCat = $pdo->query("SELECT DISTINCT categorie FROM produit");
 $categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
 
-$stmtLatest = $pdo->query("SELECT * FROM produit ORDER BY id_produit desc LIMIT 4");
+$stmtLatest = $pdo->query("SELECT * FROM produit ORDER BY id_produit desc LIMIT 6");
 $latestProducts = $stmtLatest->fetchAll(PDO::FETCH_ASSOC);
 
 $query = "SELECT * FROM produit WHERE 1=1";
@@ -25,6 +25,17 @@ if (!empty($category)) {
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmtCat = $pdo->query("SELECT DISTINCT categorie FROM produit");
+$categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
+
+// Mapping des catégories vers des images externes (exemple avec Unsplash)
+$categoryImages = [
+    'Arabica' => 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+    'Robusta' => 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+    'Blend' => 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'
+];
+
+$defaultImageUrl = 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80';
 ?>
 
 <!DOCTYPE html>
@@ -67,6 +78,34 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <button type="submit">🔍 Rechercher</button>
     </form>
 </section>
+<section class="categories-section">
+    <div class="container">
+        <h2 class="section-title">Nos Catégories</h2>
+        <div class="categories-grid">
+            <?php foreach ($categories as $cat): 
+                $imageUrl = $defaultImageUrl;
+                foreach ($categoryImages as $categoryName => $url) {
+                    if (stripos($cat, $categoryName) !== false) {
+                        $imageUrl = $url;
+                        break;
+                    }
+                }
+            ?>
+                <a href="produit.php?category=<?= urlencode($cat) ?>" class="category-card">
+                    <div class="category-image">
+                        <img src="<?= htmlspecialchars($imageUrl) ?>" 
+                             alt="<?= htmlspecialchars($cat) ?>"
+                             loading="lazy">
+                    </div>
+                    <div class="category-info">
+                        <h3><?= ucfirst(htmlspecialchars($cat)) ?></h3>
+                        <span class="btn">Voir les produits</span>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
 <section class="latest-products">
     <div class="container">
         <h2 class="section-title">Nouveautés</h2>
@@ -82,7 +121,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <p><?= htmlspecialchars(substr($produit['description'], 0, 80)) ?>...</p>
                         <div class="product-footer">
                             <span class="price"><?= number_format($produit['prix'], 2) ?> €</span>
-                            <a href="details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir le produit</a>
+                           <a href="<?= htmlspecialchars('/details.php?id=' . $produit['id_produit']) ?>" class="btn">Détails</a>
                         </div>
                     </div>
                 </div>
@@ -114,8 +153,6 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <p class="no-results">Aucun produit trouvé pour votre recherche.</p>
             <?php endif; ?>
         </div>
     </div>
@@ -159,7 +196,7 @@ $(document).ready(function(){
     dots: true,
     arrows: false,
     infinite: true,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     responsive: [
         {
@@ -170,8 +207,7 @@ $(document).ready(function(){
         }
     ]
   });
-});
-</script>
+}); </script>
 <script src="assets/js/cookies.js"></script>
 </body>
 </html>

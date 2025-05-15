@@ -11,10 +11,11 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: 'Playfair Display', serif;
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+   
     background: var(--background);
     min-height: 100vh;
     display: flex;

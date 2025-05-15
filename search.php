@@ -111,92 +111,7 @@ if ($isLiveSearch) {
     <title>Résultats de recherche | Coffee Ness ☕</title>
     <link rel="stylesheet" href="assets/css/styles.css">
     <style>
-        .search-container {
-            position: relative;
-            max-width: 800px;
-            margin: 20px auto;
-        }
         
-        .search-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .search-form input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .search-form select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .search-form button {
-            padding: 10px 20px;
-            background: #6f4e37;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .products {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .product-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            transition: transform 0.2s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        
-        #live-results-container {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            z-index: 1000;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        iframe#live-search-results {
-            width: 100%;
-            height: 300px;
-            border: none;
-        }
     </style>
 </head>
 <body>
@@ -270,15 +185,13 @@ document.addEventListener('DOMContentLoaded', function() {
             liveResultsContainer.style.display = 'none';
         }
     });
-    
-    // Hide results when clicking outside
+
     document.addEventListener('click', function(e) {
         if (!searchInput.contains(e.target) && !liveResultsContainer.contains(e.target)) {
             liveResultsContainer.style.display = 'none';
         }
     });
-    
-    // Allow form submission to filter products on this page
+   
     document.querySelector('.search-form').addEventListener('submit', function(e) {
         // This will refresh the search page with the new filters
     });

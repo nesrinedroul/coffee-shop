@@ -109,7 +109,7 @@ session_destroy();
 </head>
 <body>
   <div class="logout-container">
-    <div class="steam"></div>
+    
     <h1>☕ Vous êtes déconnecté</h1>
     <p>Merci pour votre visite. Vous serez redirigé vers la page d'accueil dans quelques secondes...</p>
     <a href="index.php" class="btn">Retourner maintenant</a>
