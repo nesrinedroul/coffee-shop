@@ -23,7 +23,7 @@ try {
         throw new Exception("Commande introuvable ou déjà annulée.");
     }
 
-    $_SESSION['success'] = "Commande #$commande_id annulée avec succès.";
+   
 } catch (Exception $e) {
     $_SESSION['error'] = "Erreur : " . $e->getMessage();
 }
