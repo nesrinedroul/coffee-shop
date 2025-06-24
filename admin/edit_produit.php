@@ -2,19 +2,16 @@
 include('../includes/db.php');
 session_start();
 
-// Verify admin role
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit();
 }
 
-// Check product ID
 $product_id = $_GET['id'] ?? null;
 if (!$product_id) {
     die("ID produit manquant");
 }
 
-// Fetch product data
 $stmt = $pdo->prepare("SELECT * FROM produit WHERE id_produit = ?");
 $stmt->execute([$product_id]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -23,11 +20,10 @@ if (!$product) {
     die("Produit non trouvé");
 }
 
-// Determine current image type
 $currentImage = $product['image'];
 $isCurrentImageUrl = filter_var($currentImage, FILTER_VALIDATE_URL);
 
-// Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Retrieve form data
     $name = trim($_POST['name']);
@@ -37,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $category = trim($_POST['category']);
     $imageUrl = trim($_POST['image_url'] ?? '');
 
-    // Initialize with current image
     $newImagePath = $currentImage;
 
     // Handle image upload
@@ -49,41 +44,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!in_array($fileType, $allowedTypes)) {
             die("Type de fichier non autorisé. Formats acceptés: JPG, PNG, GIF, WebP");
         }
-
-        // Delete old file if it's a local upload
         if (!$isCurrentImageUrl && file_exists("../".$currentImage)) {
             unlink("../".$currentImage);
         }
-
-        // Upload new file
         $uploadDir = '../uploads/';
         if (!file_exists($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
 
         $fileName = uniqid() . '_' . basename($_FILES['image_upload']['name']);
-        $newImagePath = 'uploads/' . $fileName;
+        $newImagePath = '../uploads/' . $fileName;
         
         if (!move_uploaded_file($_FILES['image_upload']['tmp_name'], "../".$newImagePath)) {
             die("Erreur lors du téléchargement de l'image");
         }
     } 
-    // Handle image URL
+  
     elseif (!empty($imageUrl)) {
-        // Validate URL format
+        
         if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
             die("URL d'image invalide");
         }
-
-        // Validate image extension
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         $urlExtension = strtolower(pathinfo(parse_url($imageUrl, PHP_URL_PATH), PATHINFO_EXTENSION));
         
         if (!in_array($urlExtension, $allowedExtensions)) {
             die("L'URL doit pointer vers une image valide (JPG, PNG, GIF, WebP)");
         }
-
-        // Delete old local file if switching from upload to URL
         if (!$isCurrentImageUrl && file_exists("../".$currentImage)) {
             unlink("../".$currentImage);
         }
@@ -91,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $newImagePath = $imageUrl;
     }
 
-    // Update product in database
     try {
         $sql = "UPDATE produit SET 
                 nom = ?, 
@@ -356,7 +342,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <form action="edit_produit.php?id=<?= htmlspecialchars($product_id) ?>" method="POST" enctype="multipart/form-data">
                 <div class="form-grid">
-                    <!-- Left Column -->
+                  
                     <div class="form-left">
                         <div class="form-group">
                             <label for="name">Nom du produit</label>
@@ -387,7 +373,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <p>Aucune image disponible</p>
                             <?php endif; ?></div>     
                    </div>
-                    <!-- Right Column -->
+                    
                     <div class="form-right">
                         <div class="form-group">
                             <label for="price">Prix (DZD)</label>
@@ -406,8 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <input type="text" name="category" id="category" 
                                    value="<?= htmlspecialchars($product['categorie']) ?>" required>
                         </div>
-                             <!-- Image Section -->
-                     <!-- Image Section -->
+                            
                         <div class="form-group full-width">
                             <label>Image du produit</label>
                             <div class="tabs">
@@ -419,7 +404,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </div>
                             </div>
 
-                            <!-- Upload Tab -->
                             <div class="tab-content <?= !$isCurrentImageUrl ? 'active' : '' ?>" id="upload-tab">
                                 <label class="image-uploader" for="image_upload">
                                     <i class='bx bx-image-add'></i>
@@ -434,7 +418,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </label>
                             </div>
 
-                            <!-- URL Tab -->
+                            
                             <div class="tab-content <?= $isCurrentImageUrl ? 'active' : '' ?>" id="url-tab">
                                 <input type="url" name="image_url" id="image_url" 
                                        placeholder="https://example.com/image.jpg" 

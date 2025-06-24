@@ -22,7 +22,6 @@ $lowStock = $pdo->query("
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../assets/css/admin_product.css">
     <style>
-        /* Notification system styles */
         .notifications-container {
             position: fixed;
             top: 80px;
@@ -62,8 +61,6 @@ $lowStock = $pdo->query("
             to { transform: translateX(0); opacity: 1; }
         }
         
-      
-        /* Custom confirmation dialog */
         .confirmation-dialog {
             display: none;
             position: fixed;
@@ -115,7 +112,7 @@ $lowStock = $pdo->query("
 <body>
 <?php include('admin_header.php'); ?>
 
-<!-- Notifications container -->
+
 <div class="notifications-container">
     <?php foreach ($lowStock as $product): ?>
         <div class="stock-notification">
@@ -137,7 +134,7 @@ $lowStock = $pdo->query("
     </div>
 </div>
 
-<div class="main-content main ">
+<div class="main-content ">
     <div class="header">
         <h1>Produits</h1>
         <a href="add_produit.php" class="btn">+ Ajouter Produit</a>
@@ -152,7 +149,7 @@ $lowStock = $pdo->query("
                     </div>
                 <?php else: ?>
                     <div class="product-image">
-                        <img src="../assets/images/default-product.png" alt="Produit Image">
+                        <img src="../uploads/<? htmlspecialchars($product['name'])?>.jpg" alt="Produit Image">
                     </div>
                 <?php endif; ?>
 
@@ -174,7 +171,7 @@ $lowStock = $pdo->query("
 </div>
 
 <script>
-    // Delete confirmation system
+    
     let currentDeleteUrl = '';
     
     function showDeleteConfirmation(productId) {
@@ -190,14 +187,12 @@ $lowStock = $pdo->query("
         document.getElementById('confirmationDialog').style.display = 'none';
     });
     
-    // Close the dialog when clicking outside
+   
     document.getElementById('confirmationDialog').addEventListener('click', function(e) {
         if (e.target === this) {
             this.style.display = 'none';
         }
     });
-
-    // Close notification when X is clicked
     document.querySelectorAll('.close-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.target.closest('.stock-notification').style.opacity = '0';
@@ -206,8 +201,7 @@ $lowStock = $pdo->query("
             }, 300);
         });
     });
-    
-    // Auto-close notifications after 8 seconds
+
     document.querySelectorAll('.stock-notification').forEach(notification => {
         setTimeout(() => {
             notification.style.opacity = '0';

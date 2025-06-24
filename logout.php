@@ -36,7 +36,7 @@ session_destroy();
 
     .logout-container::before {
       content: "";
-      background-image: url('https://i.imgur.com/OvMZBs9.png'); /* Icône café */
+      background-image: url('https://i.imgur.com/OvMZBs9.png');
       background-size: 100px;
       background-repeat: no-repeat;
       position: absolute;

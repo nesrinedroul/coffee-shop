@@ -7,16 +7,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// Récupération des mêmes paramètres que la page principale
 $mot_cle = $_GET['mot_cle'] ?? null;
-// ... autres paramètres
 
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename=commandes_' . date('Y-m-d') . '.csv');
 
 $output = fopen('php://output', 'w');
 
-// En-têtes CSV
 fputcsv($output, [
     'ID Commande', 'Date', 'Client', 'Total', 'Statut', 
     'Produits', 'Quantité', 'Prix Unitaire'
@@ -24,7 +21,7 @@ fputcsv($output, [
 
 try {
     $stmt = $pdo->prepare("CALL ListerDetailsCommandes()");
-    $stmt->execute([/* paramètres de filtre */]);
+    $stmt->execute([]);
 
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         fputcsv($output, [

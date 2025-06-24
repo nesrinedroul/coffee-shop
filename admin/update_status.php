@@ -27,7 +27,6 @@ if (!isset($data['new_status'], $data['order_id'])) {
     exit();
 }
 
-// Liste des statuts autorisés 
 $statuts_valides = ['en_attente', 'validee', 'annulee', 'en_cours', 'livree']; 
 if (!in_array($data['new_status'], $statuts_valides)) {
     http_response_code(422);

@@ -11,7 +11,6 @@
             box-sizing: border-box;
             margin: 0%;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
             background-color: var(--light-color);
             color: var(--dark-color);
         }
@@ -244,6 +243,69 @@
         .continue-btn:hover {
             background: #a57e52;
             transform: translateY(-2px);
+        }
+           .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background-color: #4CAF50;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        .notification.warning {
+            background-color: #ff9800;
+        }
+        .quantity-btn {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border: none;
+            background-color: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .quantity-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .quantity-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .quantity-form {
+            display: flex;
+            align-items: center;
+        }
+        
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 8px;
         }
         
         @media (max-width: 768px) {

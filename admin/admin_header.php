@@ -127,7 +127,6 @@ include('../includes/db.php');
             flex-direction: column;
         }
 
-        /* Header amélioré */
         .header {
             height: 80px;
             background-color: var(--bg-light);
@@ -203,7 +202,6 @@ include('../includes/db.php');
             color: var(--primary);
         }
 
-        /* Version mobile */
         @media (max-width: 1024px) {
             .sidebar {
                 width: 240px;
@@ -228,7 +226,7 @@ include('../includes/db.php');
     </style>
 </head>
 <body>
-    <!-- Sidebar amélioré -->
+  
     <div class="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">

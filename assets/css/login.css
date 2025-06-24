@@ -1,10 +1,10 @@
 * {
     box-sizing: border-box;
+    font-family: 'Playfair Display', serif;
 }
 
 body {
     margin: 0;
-    font-family: poppins;
     background: #f4f4f4;
     display: flex;
     align-items: center;

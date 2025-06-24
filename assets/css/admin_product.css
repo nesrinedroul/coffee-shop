@@ -51,7 +51,7 @@
         button[type="submit"] {
             width: 100%;
             padding: 12px;
-            background-color: #007BFF;
+            background-color:#2C1810;
             border: none;
             color: white;
             border-radius: 8px;
@@ -61,7 +61,7 @@
         }
 
         button[type="submit"]:hover {
-            background-color: #0056b3;
+            background-color: #2C1810;
         }
 
         @media (max-width: 600px) {
@@ -71,7 +71,7 @@
             }
         }
         :root {
-            --primary-color: #4f46e5;
+            --primary-color: #2C1810;
             --secondary-color: #f9fafb;
             --text-color: #1f2937;
             --card-bg: #ffffff;
@@ -83,7 +83,7 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Inter', sans-serif;
+             font-family: 'Playfair Display', serif;
             background-color: var(--secondary-color);
             display: flex;
             height: 100vh;
@@ -113,13 +113,18 @@
             transition: background 0.3s;
         }
         .header .btn:hover {
-            background: #4338ca;
+            background: #2C1810;
         }
         .content {
             padding: 30px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
+    
+            flex: 1;
+          
+            overflow-y: auto;
+        
         }
         .card {
             background: var(--card-bg);
@@ -182,7 +187,7 @@
         .product-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* remplissage intelligent */
+        object-fit: cover; 
         }
         .card-body {
         flex: 1;

@@ -13,8 +13,9 @@
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    gap: 1.8rem;
     margin-bottom: 2rem;
+    padding:25px;
 }
 
 .stat-card {
@@ -78,7 +79,6 @@
     display: block;
 }
 
-/* Recent Orders */
 .recent-orders {
     margin-top: 2rem;
     background: white;

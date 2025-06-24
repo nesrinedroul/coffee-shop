@@ -6,6 +6,7 @@
   color: white;
   padding: 20px;
   text-align: center;
+  width: 100%;
 ">
     <div class="footer-links">
         <p>📍 Coffee Ness, Alger - Bab Ezzouar</p>

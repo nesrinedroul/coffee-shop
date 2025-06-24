@@ -8,12 +8,11 @@ $commande_id = $_GET['commande'] ?? null;
 <head>
     <meta charset="UTF-8">
     <title>Commande confirmée</title>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Raleway', sans-serif;
+            font-family: 'Playfair Display', serif;
             background-color: #fef9f4;
             color: #3e2c1c;
             display: flex;
@@ -84,8 +83,7 @@ $commande_id = $_GET['commande'] ?? null;
         <h1>Merci pour votre commande !</h1>
         <?php if ($commande_id): ?>
             <p>Votre commande a bien été enregistrée.</p>
-        <?php else: ?>
-            <p>Votre commande a bien été enregistrée.</p>
+       
         <?php endif; ?>
         <a href="index.php">Retour à l'accueil</a>
     </div>

@@ -2,13 +2,10 @@
 session_start();
 require_once '../includes/db.php';
 
-// Vérification de l'authentification admin
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit();
 }
-
-// Paramètres de filtrage
 $mot_cle = !empty($_GET['mot_cle']) ? $_GET['mot_cle'] : null;
 $statut = !empty($_GET['statut']) ? $_GET['statut'] : null;
 $date_debut = !empty($_GET['date_debut']) ? $_GET['date_debut'] : null;
@@ -16,7 +13,6 @@ $date_fin = !empty($_GET['date_fin']) ? $_GET['date_fin'] : null;
 $page = max(1, $_GET['page'] ?? 1);
 $per_page = 20;
 
-// Liste des statuts possibles
 $statuts_disponibles = ['en_attente', 'validee', 'annulee'];
 
 try {
@@ -30,7 +26,6 @@ try {
     die("Erreur SQL : " . $e->getMessage());
 }
 
-// Fonction pour afficher un statut lisible
 function formatStatut($statut) {
     $statuts = [
         'en_attente' => '⏳ En attente',
@@ -65,6 +60,7 @@ function formatStatut($statut) {
         }
 
         body {
+            margin:27px;
             font-family: 'Inter', sans-serif;
             background-color: #f5f7fb;
             color: #1a1a1a;
@@ -72,6 +68,7 @@ function formatStatut($statut) {
         }
 
         .page-header {
+            padding:10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -85,19 +82,17 @@ function formatStatut($statut) {
             font-weight: 700;
             color: var(--dark);
         }
-
-        /* Filtres améliorés */
         .filter-card {
             background-color: var(--white);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            padding: 1.25rem;
+            padding: 1rem;
             margin-bottom: 2rem;
         }
 
         .filter-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 1rem;
             align-items: end;
         }
@@ -135,7 +130,6 @@ function formatStatut($statut) {
             background-color: rgba(67, 97, 238, 0.1);
         }
 
-        /* Tableau amélioré */
         .data-table {
             width: 100%;
             background-color: var(--white);
@@ -171,8 +165,6 @@ function formatStatut($statut) {
         .data-table tr:hover td {
             background-color: #f8fafc;
         }
-
-        /* Badges de statut */
         .status-badge {
             display: inline-block;
             padding: 0.35rem 0.75rem;
@@ -197,7 +189,6 @@ function formatStatut($statut) {
             color: #c92a2a;
         }
 
-        /* Actions */
         .action-btn {
             display: inline-flex;
             align-items: center;
@@ -217,7 +208,6 @@ function formatStatut($statut) {
             color: var(--primary);
         }
 
-        /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
@@ -250,7 +240,6 @@ function formatStatut($statut) {
             border-color: var(--primary);
         }
 
-        /* Responsive */
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -282,7 +271,7 @@ function formatStatut($statut) {
                 <h1 class="page-title">Gestion des Commandes</h1>
                 <div class="actions">
                 <a href="export.php" class="action-btn" title="Imprimer">
-                                                <i class='bx bx-printer'></i>importer csv
+                                                <i class='bx bx-printer'></i>importer
                                             </a>
                 </div>
             </div>
@@ -338,7 +327,7 @@ function formatStatut($statut) {
                             <th>Client</th>
                             <th>Montant</th>
                             <th>Statut</th>
-                            <th>Actions</th>
+                           
                         </tr>
                     </thead>
                     <tbody>
@@ -360,13 +349,6 @@ function formatStatut($statut) {
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <a href="commande_details.php?id=<?= $commande['id_commande'] ?>" class="action-btn" title="Voir détails">
-                                                <i class='bx bx-show'></i>
-                                            </a>
-                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

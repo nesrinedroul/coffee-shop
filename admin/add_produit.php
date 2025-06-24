@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!file_exists('../uploads')) {
             mkdir('../uploads', 0777, true);
         }
-        $imageName = uniqid() . '_' . basename($_FILES['image_upload']['name']);
-        $imagePath = 'uploads/' . $imageName;
+        $imageName = basename($_FILES['image_upload']['name']);
+        $imagePath = '../uploads/' . $imageName;
         if (!move_uploaded_file($_FILES['image_upload']['tmp_name'], '../' . $imagePath)) {
             die("Erreur lors du téléchargement de l'image.");
         }
@@ -387,7 +387,7 @@ unset($_SESSION['old_input']);
                         </div>
                         
                         <div class="form-group">
-                            <label for="price">Prix (€)</label>
+                            <label for="price">Prix (dzd)</label>
                             <input type="number" name="price" id="price" step="0.01" min="0" placeholder="Ex: 9.99" required>
                         </div>
                         

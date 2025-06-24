@@ -2,18 +2,11 @@
 session_start();
 include('includes/db.php');
 
-// Récupération des filtres
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $category = isset($_GET['category']) ? trim($_GET['category']) : '';
-
-// Récupération des catégories
 $stmtCat = $pdo->query("SELECT DISTINCT categorie FROM produit");
 $categories = $stmtCat->fetchAll(PDO::FETCH_COLUMN);
 
-// Requête pour tous les produits (pour la recherche JS)
-$allProducts = $pdo->query("SELECT id_produit, nom, prix, image, stock FROM produit")->fetchAll(PDO::FETCH_ASSOC);
-
-// Requête filtrée (pour l'affichage principal)
 $query = "SELECT * FROM produit WHERE 1=1";
 $params = [];
 
@@ -29,19 +22,21 @@ if (!empty($category)) {
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$allProducts = $pdo->query("SELECT id_produit, nom, prix, image, stock FROM produit")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Nos Produits | Coffee Ness ☕</title>
+    <title>Coffee Ness ☕</title>
     <link rel="stylesheet" href="assets/css/produit.css">
-    <style>
-        
-    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+
 </head>
 <body>
+
 <?php include('includes/header.php'); ?>
 
 <section class="search-section">
@@ -69,7 +64,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <section id="products">
     <h2>Nos Produits <?= $category ? '(' . ucfirst(htmlspecialchars($category)) . ')' : '' ?></h2>
     
-    <div class="products">
+    <div class="products ">
         <?php if ($produits): ?>
             <?php foreach ($produits as $produit): ?>
                 <div class="product-card">
@@ -77,14 +72,14 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <img src="<?= htmlspecialchars($produit['image']) ?>" alt="<?= htmlspecialchars($produit['nom']) ?>">
                         <?php if ($produit['stock'] < 5): ?>
                             <span class="badge stock-warning">Stock limité</span>
-                        <?php else: ?>
-                            <span class="badge stock-ok">Disponible</span>
                         <?php endif; ?>
                     </div>
                     <h3><?= htmlspecialchars($produit['nom']) ?></h3>
-                    <p><?= htmlspecialchars($produit['description']) ?></p>
-                    <span class="price"><?= number_format($produit['prix'], 2) ?> €</span>
-                    <a href="details.php?id=<?= $produit['id_produit'] ?>" class="btn">Voir Détail</a>
+                    <p><?= htmlspecialchars(substr($produit['description'], 0, 100)) ?>...</p>
+                    <div class="product-footer">
+                        <span class="price"><?= number_format($produit['prix'], 2) ?> DZD</span>
+                        <a href="details.php?id=<?= $produit['id_produit'] ?>" class="btn">Détails</a>
+                    </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
@@ -94,7 +89,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </section>
 
 <script>
-// Stocke tous les produits en JavaScript
+
 const allProducts = [
     <?php 
     foreach ($allProducts as $p) {
@@ -118,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (searchTerm.length < 2) {
             liveResults.style.display = 'none';
+            liveResults.innerHTML = '';
             return;
         }
         
@@ -142,8 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="details.php?id=${product.id}">
                     <img src="${product.image}" alt="${product.name}">
                     <div>
-                        <strong>${product.name}</strong>
-                        <div>${product.price.toFixed(2)} €</div>
+                        <h4>${product.name}</h4>
+                        <p>${product.price.toFixed(2)} DZD</p>
                         <small>${product.stock < 5 ? 'Stock limité' : 'Disponible'}</small>
                     </div>
                 </a>
@@ -154,9 +150,8 @@ document.addEventListener('DOMContentLoaded', function() {
         liveResults.style.display = 'block';
     }
     
-    // Cacher les résultats quand on clique ailleurs
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('#search-input') && !e.target.closest('#live-results')) {
+        if (!searchInput.contains(e.target) && !liveResults.contains(e.target)) {
             liveResults.style.display = 'none';
         }
     });
